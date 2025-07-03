@@ -1,0 +1,19 @@
+{
+  "name": "lcci-project",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w auth-service\" \"npm run dev -w user-service\" \"npm run start -w admin-ui-service\"",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "concurrently": "^8.2.0",
+    "typescript": "^5.0.0"
+  }
+}

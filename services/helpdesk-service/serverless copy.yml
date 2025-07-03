@@ -1,0 +1,169 @@
+service: helpdesk-service
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:3010
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Requested-With
+      allowCredentials: true
+  environment:
+    DB_HOST: ${env:DB_HOST, 'localhost'}
+    DB_PORT: ${env:DB_PORT, '5433'}
+    DB_NAME: ${env:DB_NAME, 'litf_db'}
+    DB_USER: ${env:DB_USER, 'root'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'root'}
+    NODE_ENV: ${env:NODE_ENV, 'development'}
+
+plugins:
+  - serverless-offline
+
+functions:
+  # FR8.1 - Geolocation Features
+  getExhibitorLocation:
+    handler: app/handlers/geolocationHandler.getExhibitorLocation
+    events:
+      - httpApi:
+          path: /geolocation/exhibitors/{id}
+          method: get
+
+  findNearbyExhibitors:
+    handler: app/handlers/geolocationHandler.findNearbyExhibitors
+    events:
+      - httpApi:
+          path: /geolocation/nearby
+          method: post
+
+  # FR8.2 - AI-driven FAQ System
+  queryFAQ:
+    handler: app/handlers/faqHandler.queryFAQ
+    events:
+      - httpApi:
+          path: /faq/query
+          method: post
+
+  getFAQs:
+    handler: app/handlers/faqHandler.getFAQs
+    events:
+      - httpApi:
+          path: /faq
+          method: get
+  # FAQ Management (Admin)
+  createFAQ:
+    handler: app/handlers/faqHandler.createFAQ
+    events:
+      - httpApi:
+          path: /admin/faq
+          method: post
+
+  updateFAQ:
+    handler: app/handlers/faqHandler.updateFAQ
+    events:
+      - httpApi:
+          path: /admin/faq/{id}
+          method: put
+
+  deleteFAQ:
+    handler: app/handlers/faqHandler.deleteFAQ
+    events:
+      - httpApi:
+          path: /admin/faq/{id}
+          method: delete
+
+  # FAQ Public endpoints
+  getFAQById:
+    handler: app/handlers/faqHandler.getFAQById
+    events:
+      - httpApi:
+          path: /faq/{id}
+          method: get
+
+  # FR8.3 - Live Chat Support
+  initChat:
+    handler: app/handlers/chatHandler.initChat
+    events:
+      - httpApi:
+          path: /chat/init
+          method: post
+
+  sendMessage:
+    handler: app/handlers/chatHandler.sendMessage
+    events:
+      - httpApi:
+          path: /chat/message
+          method: post
+
+  # FR8.4 - Documentation System
+  getDocumentation:
+    handler: app/handlers/documentationHandler.getDocumentation
+    events:
+      - httpApi:
+          path: /docs/{category}
+          method: get
+
+  searchDocs:
+    handler: app/handlers/documentationHandler.searchDocs
+    events:
+      - httpApi:
+          path: /docs/search
+          method: post
+
+  getDocumentationIndex:
+    handler: app/handlers/documentationHandler.getDocumentationIndex
+    events:
+      - httpApi:
+          path: /docs
+          method: get
+
+  # FR11.1-11.3 - Survey Management
+  createSurvey:
+    handler: app/handlers/surveyHandler.createSurvey
+    events:
+      - httpApi:
+          path: /surveys
+          method: post
+
+  getSurveys:
+    handler: app/handlers/surveyHandler.getSurveys
+    events:
+      - httpApi:
+          path: /surveys
+          method: get
+
+  submitSurveyResponse:
+    handler: app/handlers/surveyHandler.submitSurveyResponse
+    events:
+      - httpApi:
+          path: /surveys/{id}/responses
+          method: post
+
+  getSurveyAnalytics:
+    handler: app/handlers/surveyHandler.getSurveyAnalytics
+    events:
+      - httpApi:
+          path: /surveys/{id}/analytics
+          method: get
+
+custom:
+  serverless-offline:
+    httpPort: 4003
+    lambdaPort: 3003
+    host: 0.0.0.0

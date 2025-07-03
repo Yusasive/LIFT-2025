@@ -1,0 +1,70 @@
+service: booth-service
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:3010
+        - http://localhost:3011
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Requested-With
+      allowCredentials: true
+  environment:
+    DB_HOST: ${env:DB_HOST, 'localhost'}
+    DB_PORT: ${env:DB_PORT, '5432'}
+    DB_NAME: ${env:DB_NAME, 'litf-db-booth-service'}
+    DB_USER: ${env:DB_USER, 'root'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'root'}
+    APP_SERVICE_SECRET: ${env:APP_SERVICE_SECRET, 'your_jwt_secret'}
+    INTERNAL_SERVICE_KEY: ${env:INTERNAL_SERVICE_KEY, 'INTERNAL_SERVICE_KEY'}
+
+plugins:
+  - serverless-offline
+
+functions:
+  # Booth Service
+  booth:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/reserve
+          method: post
+      - httpApi:
+          path: /booth/reservations
+          method: get
+      - httpApi:
+          path: /booth/reserved
+          method: get
+      - httpApi:
+          path: /booth/reservations/{id}
+          method: delete
+      - httpApi:
+          path: /booth/stats
+          method: get
+      - httpApi:
+          path: /users/{id}
+          method: delete
+
+custom:
+  serverless-offline:
+    httpPort: 4006
+    lambdaPort: 3006
+    host: 0.0.0.0

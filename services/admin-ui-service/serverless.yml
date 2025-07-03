@@ -1,0 +1,17 @@
+service: admin-ui-service
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-north-1'}
+
+custom:
+  build:
+    env:
+      VITE_SERVICE_BASE_URL: ${ssm:/litf-${opt:stage, 'dev'}/base-url}
+      VITE_ENVIRONMENT: ${opt:stage, 'dev'}
+
+outputs:
+  CloudFrontDomainName:
+    Value:
+      Fn::ImportValue: litf-${self:provider.stage}-CloudFrontDomainName

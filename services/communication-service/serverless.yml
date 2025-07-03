@@ -1,0 +1,86 @@
+service: communication-service
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:3010
+        - http://localhost:3011
+        - https://9c1d-2607-fea8-bde-2100-794b-32ef-bda1-9adb.ngrok-free.app
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Requested-With
+      allowCredentials: true
+  environment:
+    AWS_SES_REGION: ${env:AWS_SES_REGION, 'us-east-1'}
+    FROM_EMAIL: ${env:FROM_EMAIL, 'noreply@yourdomain.com'}
+    INTERNAL_SERVICE_KEY: ${env:INTERNAL_SERVICE_KEY, 'INTERNAL_SERVICE_KEY'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+        - ses:GetSendStatistics
+        - ses:VerifyEmailIdentity
+      Resource: "*"
+
+plugins:
+  - serverless-offline
+
+functions:
+  # internal:
+  #   handler: app/handlers/internalHandler.handler
+  #   events:
+  #     - httpApi:
+  #         path: /internal
+  #         method: post
+
+  sendEmail:
+    handler: app/handlers/emailHandler.handler
+    events:
+      - httpApi:
+          path: /email/send
+          method: post
+
+  # sendBulkEmail:
+  #   handler: app/handlers/emailHandler.handler
+  #   events:
+  #     - httpApi:
+  #         path: /email/send-bulk
+  #         method: post
+
+  # getEmailStatistics:
+  #   handler: app/handlers/emailHandler.handler
+  #   events:
+  #     - httpApi:
+  #         path: /email/statistics
+  #         method: get
+
+  # verifyEmailAddress:
+  #   handler: app/handlers/emailHandler.handler
+  #   events:
+  #     - httpApi:
+  #         path: /email/verify
+  #         method: post
+
+custom:
+  serverless-offline:
+    httpPort: 4008
+    lambdaPort: 3008
+    host: 0.0.0.0 

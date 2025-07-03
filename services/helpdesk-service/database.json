@@ -1,0 +1,11 @@
+{
+  "dev": {
+    "driver": "pg",
+    "host": "localhost",
+    "port": "5433",
+    "database": "litf-db",
+    "user": "root",
+    "password": "root",
+    "schema": "public"
+  }
+}

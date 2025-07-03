@@ -1,0 +1,90 @@
+service: payment-service
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:3010
+        - http://localhost:3011
+        - https://9c1d-2607-fea8-bde-2100-794b-32ef-bda1-9adb.ngrok-free.app
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Requested-With
+      allowCredentials: true
+  environment:
+    DB_HOST: ${env:DB_HOST, 'localhost'}
+    DB_PORT: ${env:DB_PORT, '5432'}
+    DB_NAME: ${env:DB_NAME, 'litf-db-payment-service'}
+    DB_USER: ${env:DB_USER, 'root'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'root'}
+    APP_SERVICE_SECRET: ${env:APP_SERVICE_SECRET, 'your_jwt_secret_here'}
+    INTERNAL_SERVICE_KEY: ${env:INTERNAL_SERVICE_KEY, 'INTERNAL_SERVICE_KEY'}
+    PAYSTACK_SECRET_KEY: ${env:PAYSTACK_SECRET_KEY}
+    CLIENT_URL: ${env:CLIENT_URL, 'http://localhost:3010'}
+
+plugins:
+  - serverless-offline
+
+functions:
+  health:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /health
+          method: get
+
+  createPayment:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /make-payment
+          method: post
+
+  verifyPayment:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /verify-payment
+          method: post
+
+  getPaymentList:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /get-payment-list
+          method: get
+  
+  getPaymentAllPayments:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /get-payment-all-payments
+          method: get
+
+  internal:
+    handler: app/handlers/internalHandler.handler
+    events:
+      - httpApi:
+          path: /internal
+          method: post
+
+custom:
+  serverless-offline:
+    httpPort: 4005
+    lambdaPort: 3005
+    host: 0.0.0.0 

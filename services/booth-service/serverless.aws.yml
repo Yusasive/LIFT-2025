@@ -1,0 +1,105 @@
+service: booth-service
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-north-1'}
+  vpc:
+    subnetIds:
+      - ${ssm:/litf-${opt:stage, 'dev'}/subnet1-Id}
+      - ${ssm:/litf-${opt:stage, 'dev'}/subnet2-Id}
+    securityGroupIds:
+      - ${ssm:/litf-${opt:stage, 'dev'}/security-group-Id}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - ${ssm:/litf-${opt:stage, 'dev'}/client-ui}
+        - ${ssm:/litf-${opt:stage, 'dev'}/admin-ui}
+        - ${ssm:/litf-${opt:stage, 'dev'}/base-url}
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Requested-With
+      allowCredentials: true
+  environment:
+    DB_HOST: ${ssm:/litf-${opt:stage, 'dev'}/db-host}
+    DB_PORT: ${ssm:/litf-${opt:stage, 'dev'}/db-port}
+    DB_NAME: ${ssm:/litf-${opt:stage, 'dev'}/booth-service/db-name}
+    DB_USER: ${ssm:/litf-${opt:stage, 'dev'}/db-user}
+    DB_PASSWORD: ${ssm:/litf-${opt:stage, 'dev'}/db-pass}
+    APP_SERVICE_SECRET: ${ssm:/litf-${opt:stage, 'dev'}/booth-service/app-secret}
+    AUTH_SERVICE_URL: ${ssm:/litf-${opt:stage, 'dev'}/auth-service/base-url}
+    USER_SERVICE_URL: ${ssm:/litf-${opt:stage, 'dev'}/user-service/base-url}
+    PAYMENT_SERVICE_URL: ${ssm:/litf-${opt:stage, 'dev'}/payment-service/base-url}
+    INTERNAL_SERVICE_KEY: ${ssm:/litf-${opt:stage, 'dev'}/internal-key}
+    NODE_ENV: ${opt:stage, 'dev'}
+    ALLOWED_ORIGINS: ${ssm:/litf-${opt:stage, 'dev'}/allowed-origins}
+
+plugins:
+  - serverless-offline
+
+functions:
+  createBoothReservation:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/reserve
+          method: post
+
+  getBoothReservations:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/reservations
+          method: get
+
+  getReservedBooths:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/reserved
+          method: get
+
+  deleteBoothReservation:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/reservations/{id}
+          method: delete
+
+  getBoothStats:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/stats
+          method: get
+
+  getBoothById:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/{id}
+          method: get
+  
+  runMigration:
+    handler: app/config/runMigration.handler
+
+
+custom:
+  serverless-offline:
+    httpPort: 4006
+    lambdaPort: 3006
+    host: 0.0.0.0

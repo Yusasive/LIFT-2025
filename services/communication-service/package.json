@@ -1,0 +1,35 @@
+{
+    "name": "communication-service",
+    "version": "1.0.0",
+    "description": "Communication service for LITF with email functionality using AWS SES",
+    "main": "index.js",
+    "scripts": {
+        "dev": "serverless offline --verbose",
+        "deploy": "serverless deploy",
+        "test": "jest",
+        "typeorm": "typeorm-ts-node-commonjs",
+        "migration:generate": "npm run typeorm migration:generate app/migrations/InitialMigration -- -d app/config/typeorm.config.ts",
+        "migration:run": "npm run typeorm migration:run -- -d app/config/typeorm.config.ts",
+        "migration:revert": "npm run typeorm migration:revert -- -d app/config/typeorm.config.ts"
+    },
+    "dependencies": {
+        "@middy/core": "^4.0.9",
+        "@middy/http-json-body-parser": "^4.0.9",
+        "aws-lambda": "^1.0.7",
+        "aws-sdk": "^2.1348.0",
+        "axios": "^1.3.4",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.0",
+        "dotenv": "^16.0.3",
+        "reflect-metadata": "^0.1.13",
+        "ts-node": "^10.9.1",
+        "tsyringe": "^4.7.0",
+        "typescript": "^4.9.4"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.109",
+        "serverless": "^4.14.4",
+        "serverless-offline": "^14.4.0",
+        "serverless-plugin-optimize": "^4.2.1-rc.1"
+    }
+} 

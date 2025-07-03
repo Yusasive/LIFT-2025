@@ -1,0 +1,102 @@
+service: payment-service
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  vpc:
+    subnetIds:
+      - ${ssm:/litf-${opt:stage, 'dev'}/subnet1-Id}
+      - ${ssm:/litf-${opt:stage, 'dev'}/subnet2-Id}
+    securityGroupIds:
+      - ${ssm:/litf-${opt:stage, 'dev'}/security-group-Id}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - ${ssm:/litf-${opt:stage, 'dev'}/client-ui}
+        - ${ssm:/litf-${opt:stage, 'dev'}/admin-ui}
+        - ${ssm:/litf-${opt:stage, 'dev'}/base-url}
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Requested-With
+      allowCredentials: true
+  environment:
+    DB_HOST: ${ssm:/litf-${opt:stage, 'dev'}/db-host}
+    DB_PORT: ${ssm:/litf-${opt:stage, 'dev'}/db-port}
+    DB_NAME: ${ssm:/litf-${opt:stage, 'dev'}/payment-service/db-name}
+    DB_USER: ${ssm:/litf-${opt:stage, 'dev'}/db-user}
+    DB_PASSWORD: ${ssm:/litf-${opt:stage, 'dev'}/db-pass}
+    APP_SERVICE_SECRET: ${ssm:/litf-${opt:stage, 'dev'}/payment-service/app-secret}
+    AUTH_SERVICE_URL: ${ssm:/litf-${opt:stage, 'dev'}/auth-service/base-url}
+    INTERNAL_SERVICE_KEY: ${ssm:/litf-${opt:stage, 'dev'}/internal-key}
+    PAYSTACK_SECRET_KEY: ${ssm:/litf-${opt:stage, 'dev'}/payment-service/paystack}
+    CLIENT_URL: ${ssm:/litf-${opt:stage, 'dev'}/client-ui}
+    NODE_ENV: ${opt:stage, 'dev'}
+    ALLOWED_ORIGINS: ${ssm:/litf-${opt:stage, 'dev'}/allowed-origins}
+
+plugins:
+  - serverless-offline
+
+functions:
+  health:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /health
+          method: get
+
+  createPayment:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /make-payment
+          method: post
+
+  verifyPayment:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /verify-payment
+          method: post
+
+  getPaymentList:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /get-payment-list
+          method: get
+  
+  getPaymentAllPayments:
+    handler: app/handlers/paymentHandler.handler
+    events:
+      - httpApi:
+          path: /get-payment-all-payments
+          method: get
+
+  internal:
+    handler: app/handlers/internalHandler.handler
+    events:
+      - httpApi:
+          path: /internal
+          method: post
+  
+  runMigration:
+    handler: app/config/runMigration.handler
+
+custom:
+  serverless-offline:
+    httpPort: 4005
+    lambdaPort: 3005
+    host: 0.0.0.0 

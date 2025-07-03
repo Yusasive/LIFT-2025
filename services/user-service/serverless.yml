@@ -1,0 +1,167 @@
+service: user-service
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  timeout: 30
+  memorySize: 512
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:3010
+        - http://localhost:3011
+        - https://9c1d-2607-fea8-bde-2100-794b-32ef-bda1-9adb.ngrok-free.app
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Requested-With
+      allowCredentials: true
+  environment:
+    DB_HOST: ${env:DB_HOST, 'localhost'}
+    DB_PORT: ${env:DB_PORT, '5432'}
+    DB_NAME: ${env:DB_NAME, 'litf-db-user-service'}
+    DB_USER: ${env:DB_USER, 'root'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'root'}
+    APP_SERVICE_SECRET: ${env:APP_SERVICE_SECRET, 'your_jwt_secret_here'}
+    AUTH_SERVICE_URL: ${env:AUTH_SERVICE_URL, 'http://localhost:4000'}
+    INTERNAL_SERVICE_KEY: ${env:INTERNAL_SERVICE_KEY, 'INTERNAL_SERVICE_KEY'}
+    SNS_TOPIC: ${env:SNS_TOPIC, 'arn:aws:sns:eu-central-1:123456789012:CustomerTopic'}
+    NOTIFY_TOPIC: ${env:NOTIFY_TOPIC, 'arn:aws:sns:eu-central-1:123456789012:NotifyTopic'}
+    S3_UPLOAD_BUCKET_NAME: litf-${opt:stage, 'dev'}-media
+    CLOUDFRONT_DOMAIN: ${env:CLOUDFRONT_DOMAIN, ''}
+    CLOUDFRONT_PRIVATE_KEY: ${env:CLOUDFRONT_PRIVATE_KEY, ''}
+    CLOUDFRONT_KEY_PAIR_ID: ${env:CLOUDFRONT_KEY_PAIR_ID, ''}
+  # Commenting out IAM roles - likely culprit
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sns:Publish"
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+        - "s3:PutObjectAcl"
+        - "s3:DeleteObject"
+        - "s3:GetObject"
+      Resource: 
+        - "arn:aws:s3:::litf-*-frontend/*"
+        - "arn:aws:s3:::litf-*-frontend"
+        - "arn:aws:s3:::litf-*-media/*"
+        - "arn:aws:s3:::litf-*-media"
+
+functions:
+  # User Service
+  user:
+    handler: app/handlers/userHandler.handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /signup
+          method: post
+      - httpApi:
+          path: /login
+          method: post
+      - httpApi:
+          path: /edit
+          method: patch
+      - httpApi:
+          path: /profile
+          method: post
+      - httpApi:
+          path: /profile
+          method: get
+      - httpApi:
+          path: /profile
+          method: patch
+      - httpApi:
+          path: /status
+          method: patch
+      - httpApi:
+          path: /users
+          method: get
+      - httpApi:
+          path: /logout
+          method: post
+      - httpApi:
+          path: /client/register
+          method: post
+      - httpApi:
+          path: /client/login
+          method: post
+      - httpApi:
+          path: /profile/address
+          method: post
+      - httpApi:
+          path: /profile/address/{address_id}
+          method: patch
+      - httpApi:
+          path: /profile/address/{address_id}
+          method: delete
+      - httpApi:
+          path: /profile/address/{address_id}/primary
+          method: patch
+      - httpApi:
+          path: /company-reps
+          method: post
+      - httpApi:
+          path: /company-reps
+          method: get
+      - httpApi:
+          path: /company-reps/{company_rep_id}
+          method: get
+      - httpApi:
+          path: /company-reps/{company_rep_id}
+          method: delete
+      - httpApi:
+          path: /company-reps/{company_rep_id}
+          method: patch
+      - httpApi:
+          path: /upload/image
+          method: post
+      - httpApi:
+          path: /upload/delete
+          method: delete
+
+  internal:
+    handler: app/handlers/internalHandler.handler
+    events:
+      - httpApi:
+          path: /internal
+          method: post
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 4001
+    lambdaPort: 3001
+    host: 0.0.0.0
+
+resources:
+  Resources:
+    CustomerTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "customer sns topic description"
+        TopicName: CustomerTopic-dev
+  Outputs:
+    CustomerTopicInfo:
+      Description: customer-topic
+      Value: !Ref CustomerTopic
+      Export:
+        Name: customer-topic-dev

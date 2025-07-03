@@ -1,0 +1,111 @@
+service: auth-service
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:3010
+        - http://localhost:3011
+        - https://9c1d-2607-fea8-bde-2100-794b-32ef-bda1-9adb.ngrok-free.app
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Requested-With
+      allowCredentials: true
+  environment:
+    DB_HOST: ${env:DB_HOST, 'localhost'}
+    DB_PORT: ${env:DB_PORT, '5432'}
+    DB_NAME: ${env:DB_NAME, 'litf-db-auth-service'}
+    DB_USER: ${env:DB_USER, 'root'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'root'}
+    APP_SERVICE_SECRET: ${env:APP_SERVICE_SECRET, 'your_jwt_secret'}
+    USER_SERVICE_URL: ${env:USER_SERVICE_URL, 'http://localhost:4001'}
+    INTERNAL_SERVICE_KEY: ${env:INTERNAL_SERVICE_KEY, 'INTERNAL_SERVICE_KEY'}
+
+plugins:
+  - serverless-offline
+
+functions:
+  internal:
+    handler: app/handlers/internalHandler.handler
+    events:
+      - httpApi:
+          path: /internal
+          method: post
+
+  getVerificationToken:
+    handler: app/handlers/authHandler.handler
+    events:
+      - httpApi:
+          path: /auth/verification-token
+          method: get
+
+  verifyCode:
+    handler: app/handlers/authHandler.handler
+    events:
+      - httpApi:
+          path: /auth/verify-code
+          method: post
+
+  createRole:
+    handler: app/handlers/authHandler.protectedHandler
+    events:
+      - httpApi:
+          path: /roles
+          method: post
+
+  getRoles:
+    handler: app/handlers/authHandler.protectedHandler
+    events:
+      - httpApi:
+          path: /roles
+          method: get
+
+  getRoleById:
+    handler: app/handlers/authHandler.protectedHandler
+    events:
+      - httpApi:
+          path: /roles/{id}
+          method: get
+
+  updateRole:
+    handler: app/handlers/authHandler.protectedHandler
+    events:
+      - httpApi:
+          path: /roles/{id}
+          method: put
+
+  deleteRole:
+    handler: app/handlers/authHandler.protectedHandler
+    events:
+      - httpApi:
+          path: /roles/{id}
+          method: delete
+
+  getPermissions:
+    handler: app/handlers/authHandler.protectedHandler
+    events:
+      - httpApi:
+          path: /permissions
+          method: get
+
+custom:
+  serverless-offline:
+    httpPort: 4000
+    lambdaPort: 3000
+    host: 0.0.0.0

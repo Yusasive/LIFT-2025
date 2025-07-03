@@ -1,0 +1,11 @@
+{
+  "dev": {
+    "driver": "pg",
+     "host": "host.docker.internal",
+    "port": "5432",
+    "database": "litf-db-payment-service",
+    "user": "root",
+    "password": "root",
+    "schema": "public"
+  }
+}

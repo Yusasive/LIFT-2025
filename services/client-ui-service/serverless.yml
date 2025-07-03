@@ -1,0 +1,181 @@
+service: client-ui-service
+
+plugins:
+  - serverless-finch
+  - serverless-cloudfront-invalidate
+
+custom:
+  client:
+    bucketName: litf-${self:provider.stage}-frontend
+    mediaBucketName: litf-${self:provider.stage}-media
+    distributionFolder: dist
+    indexDocument: index.html
+    errorDocument: index.html
+  cloudfrontInvalidate:
+    - distributionIdKey: CloudFrontDistributionId
+      paths:
+        - "/*"
+        - "/media/*"
+  build:
+    env:
+      VITE_SERVICE_BASE_URL: ${ssm:/litf-${opt:stage, 'dev'}/base-url}
+      VITE_ENVIRONMENT: ${opt:stage, 'dev'}
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-north-1'}
+
+resources:
+  Resources:
+    # Frontend S3 Bucket
+    FrontendBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.client.bucketName}
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+
+    # Media S3 Bucket
+    MediaBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.client.mediaBucketName}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins: ['*']
+              AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT, POST, DELETE, HEAD]
+              MaxAge: 3000
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+
+    # S3 Policies
+    FrontendBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref FrontendBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: "*"
+              Action: s3:GetObject
+              Resource: !Join ["", ["arn:aws:s3:::", !Ref FrontendBucket, "/*"]]
+
+    MediaBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref MediaBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: "*"
+              Action: s3:GetObject
+              Resource: !Join ["", ["arn:aws:s3:::", !Ref MediaBucket, "/*"]]
+
+    # CloudFront Distribution
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          DefaultRootObject: index.html
+          Origins:
+            - DomainName: !Sub '${FrontendBucket}.s3-website.${AWS::Region}.amazonaws.com'
+              Id: S3Origin
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: http-only
+            - DomainName: !GetAtt MediaBucket.RegionalDomainName
+              Id: MediaS3Origin
+              S3OriginConfig: {}
+          DefaultCacheBehavior:
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD]
+            CachedMethods: [GET, HEAD]
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: all
+                WhitelistedNames:
+                  - session
+                  - token
+            Compress: true
+
+          CacheBehaviors:
+            - PathPattern: /media/*
+              TargetOriginId: MediaS3Origin
+              ViewerProtocolPolicy: redirect-to-https
+              AllowedMethods: [GET, HEAD]
+              CachedMethods: [GET, HEAD]
+              ForwardedValues:
+                QueryString: false
+                Cookies:
+                  Forward: none
+              Compress: true
+              MinTTL: 0
+              DefaultTTL: 3600
+              MaxTTL: 86400
+
+            - PathPattern: /admin/*
+              TargetOriginId: S3Origin
+              ViewerProtocolPolicy: redirect-to-https
+              Compress: true
+              AllowedMethods: [GET, HEAD]
+              CachedMethods: [GET, HEAD]
+              ForwardedValues:
+                QueryString: false
+                Cookies:
+                  Forward: all
+                  WhitelistedNames:
+                    - session
+                    - token
+          
+          CustomErrorResponses:
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+              ErrorCachingMinTTL: 0
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+              ErrorCachingMinTTL: 0
+
+          PriceClass: PriceClass_100
+          Aliases:
+            - ${ssm:/litf-${opt:stage, 'dev'}/acm-alias}
+          ViewerCertificate:
+            AcmCertificateArn: ${ssm:/litf-${opt:stage, 'dev'}/acm-certificate-arn}
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
+
+  Outputs:
+    CloudFrontDistributionId:
+      Description: CloudFront Distribution ID for plugin
+      Value: !Ref CloudFrontDistribution
+      Export:
+        Name: litf-${self:provider.stage}-CloudFrontDistributionId
+    CloudFrontDomainName:
+      Value: !GetAtt CloudFrontDistribution.DomainName
+      Export:
+        Name: litf-${self:provider.stage}-CloudFrontDomainName
+    FrontendBucketName:
+      Value: !Ref FrontendBucket
+      Export:
+        Name: litf-${self:provider.stage}-FrontendBucketName
+    MediaBucketName:
+      Value: !Ref MediaBucket
+      Export:
+        Name: litf-${self:provider.stage}-MediaBucketName
