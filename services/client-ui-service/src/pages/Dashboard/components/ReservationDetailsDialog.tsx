@@ -26,50 +26,273 @@ const ReservationDetailsDialog: React.FC<Props> = ({ open, onClose, reservation,
     return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
+  const getStatusColor = (status?: string, type: 'payment' | 'validity' = 'payment') => {
+    if (!status) return 'text-gray-600 bg-gray-100';
+    
+    const statusLower = status.toLowerCase().trim();
+    
+    // Handle payment status specifically
+    if (type === 'payment') {
+      switch (statusLower) {
+        case 'paid':
+        case 'completed':
+        case 'success':
+          return 'text-green-600 bg-green-100';
+        case 'pending':
+        case 'processing':
+        case 'awaiting':
+          return 'text-yellow-600 bg-yellow-100';
+        case 'failed':
+        case 'cancelled':
+        case 'expired':
+          return 'text-red-600 bg-red-100';
+        default:
+          return 'text-gray-600 bg-gray-100';
+      }
+    }
+    
+    // Handle validity status
+    if (type === 'validity') {
+      switch (statusLower) {
+        case 'valid':
+        case 'active':
+        case 'confirmed':
+          return 'text-green-600 bg-green-100';
+        case 'pending':
+        case 'processing':
+          return 'text-yellow-600 bg-yellow-100';
+        case 'expired':
+        case 'invalid':
+        case 'cancelled':
+          return 'text-red-600 bg-red-100';
+        default:
+          return 'text-gray-600 bg-gray-100';
+      }
+    }
+    
+    return 'text-gray-600 bg-gray-100';
+  };
+
+  const getStatusIcon = (status?: string, type: 'payment' | 'validity' = 'payment') => {
+    if (!status) return '•';
+    
+    const statusLower = status.toLowerCase().trim();
+    
+    // Handle payment status specifically
+    if (type === 'payment') {
+      switch (statusLower) {
+        case 'paid':
+        case 'completed':
+        case 'success':
+          return '✓';
+        case 'pending':
+        case 'processing':
+        case 'awaiting':
+          return '⏳';
+        case 'failed':
+        case 'cancelled':
+        case 'expired':
+          return '✗';
+        default:
+          return '•';
+      }
+    }
+    
+    // Handle validity status
+    if (type === 'validity') {
+      switch (statusLower) {
+        case 'valid':
+        case 'active':
+        case 'confirmed':
+          return '✓';
+        case 'pending':
+        case 'processing':
+          return '⏳';
+        case 'expired':
+        case 'invalid':
+        case 'cancelled':
+          return '✗';
+        default:
+          return '•';
+      }
+    }
+    
+    return '•';
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Reservation Details</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
-        </div>
-        <div className="space-y-2">
-          <div><strong>Transaction ID:</strong> {reservation.transactionId || reservation.id}</div>
-          <div><strong>Number of Booths:</strong> {reservation.boothCount}</div>
-          <div><strong>Price:</strong> {formatPrice(reservation.totalAmount)}</div>
-          <div><strong>Payment Status:</strong> {reservation.paymentStatus}</div>
-          <div><strong>Validity Status:</strong> {reservation.validityStatus}</div>
-          <div><strong>Reservation Date:</strong> {formatDate(reservation.reservationDate)}</div>
-          <div><strong>Expiration Date:</strong> {formatDate(reservation.expirationDate)}</div>
-          {reservation.remark && (
-            <div><strong>Remark:</strong> {reservation.remark}</div>
-          )}
-          {/* List booth items if available */}
-          {reservation.booths && reservation.booths.length > 0 && (
-            <div>
-              <strong>Booth(s):</strong>
-              <ul className="list-disc list-inside ml-4">
-                {reservation.booths.map((booth, idx) => (
-                  <li key={booth.id || idx}>
-                    {booth.sector} - {booth.boothNum} ({booth.boothType}) {formatPrice(booth.boothPrice)}
-                  </li>
-                ))}
-              </ul>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-all duration-300 ease-out">
+        {/* Header */}
+        <div className="flex justify-between items-center p-8 pb-4 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
             </div>
-          )}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Reservation Details</h2>
+              <p className="text-sm text-gray-500">Transaction #{reservation.transactionId || reservation.id}</p>
+            </div>
+          </div>
+          <button 
+            onClick={onClose} 
+            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors duration-200"
+          >
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <div className="mt-6 flex justify-end gap-2">
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-8 pt-6">
+          <div className="space-y-6">
+            {/* Status Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-blue-700">Payment Status</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(reservation.paymentStatus, 'payment')}`}>
+                        <span className="mr-1">{getStatusIcon(reservation.paymentStatus?.toLowerCase(), 'payment')}</span>
+                        {reservation.paymentStatus}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {formatPrice(reservation.totalAmount)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-purple-700">Validity Status</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(reservation.validityStatus, 'validity')}`}>
+                        <span className="mr-1">{getStatusIcon(reservation.validityStatus, 'validity')}</span>
+                        {reservation.validityStatus}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Reservation Date</p>
+                    <p className="text-sm font-medium text-gray-900">{formatDate(reservation.reservationDate)}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Expiration Date</p>
+                    <p className="text-sm font-medium text-gray-900">{formatDate(reservation.expirationDate)}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Transaction ID</p>
+                    <p className="text-sm font-medium text-gray-900">#{reservation.transactionId || reservation.id}</p>
+                  </div>
+                </div>
+
+                {reservation.remark && (
+                  <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mt-0.5">
+                      <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Remark</p>
+                      <p className="text-sm font-medium text-gray-900">{reservation.remark}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Booth Details */}
+            {reservation.booths && reservation.booths.length > 0 && (
+              <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+                <div className="flex items-center space-x-2 mb-3">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <h3 className="text-lg font-semibold text-green-800">Reserved Booths</h3>
+                </div>
+                <div className="space-y-2">
+                  {reservation.booths.map((booth, idx) => (
+                    <div key={booth.id || idx} className="flex items-center justify-between p-3 bg-white rounded-lg border border-green-200">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-bold text-green-600">{idx + 1}</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{booth.sector} - {booth.boothNum}</p>
+                          <p className="text-xs text-gray-500">{booth.boothType}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-green-600">{formatPrice(booth.boothPrice)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-8 pt-6 border-t border-gray-200 flex justify-end gap-3 flex-shrink-0">
           {reservation.paymentStatus?.toLowerCase() === 'pending' && onPayNow && (
             <button
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 mr-2"
+              className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
               onClick={() => onPayNow(reservation.transactionId || reservation.id, typeof reservation.totalAmount === 'string'
                 ? parseInt(reservation.totalAmount.replace(/[^\d]/g, '')) || 0
                 : reservation.totalAmount || 0)}
             >
-              Pay Now
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              <span>Pay Now</span>
             </button>
           )}
-          <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Close</button>
+          <button 
+            onClick={onClose} 
+            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium transition-all duration-200"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>

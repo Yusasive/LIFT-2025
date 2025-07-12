@@ -1168,7 +1168,7 @@ const ZoomControls: React.FC<{
   onToggleCoordinates: () => void;
 }> = ({ onZoomIn, onZoomOut, onResetZoom, onToggleDebug, onToggleCoordinates }) => {
   return (
-    <div className="fixed top-32 left-5 bg-white bg-opacity-95 border-2 border-gray-800 rounded-lg p-2 z-50 shadow-lg">
+    <div className="fixed top-82 left-15 bg-white bg-opacity-95 border-2 border-gray-800 rounded-lg p-2 z-50 shadow-lg">
       <button 
         onClick={onZoomIn}
         className="block w-10 h-10 mb-1 bg-blue-500 text-white border-none rounded cursor-pointer font-bold text-lg hover:bg-blue-600 transition-all duration-200 hover:scale-105"
@@ -1221,16 +1221,16 @@ const CoordinateDisplay: React.FC<{
   );
 };
 
-const StatusDisplay: React.FC = () => {
-  return (
-    <div className="fixed bottom-5 right-5 bg-green-700 bg-opacity-90 text-white p-4 rounded-lg text-sm z-50">
-      ✅ Sectors Traced from Site Plan<br />
-      🎯 Tilted Polygon Coordinates<br />
-      📊 All Visible Colored Areas<br />
-      🏛️ Interactive Africa Hall Booths
-    </div>
-  );
-};
+// const StatusDisplay: React.FC = () => {
+//   return (
+//     <div className="fixed bottom-5 right-5 bg-green-700 bg-opacity-90 text-white p-4 rounded-lg text-sm z-50">
+//       ✅ Sectors Traced from Site Plan<br />
+//       🎯 Tilted Polygon Coordinates<br />
+//       📊 All Visible Colored Areas<br />
+//       🏛️ Interactive Africa Hall Booths
+//     </div>
+//   );
+// };
 
 const BoothPolygon: React.FC<{
   boothId: string;
@@ -2322,21 +2322,21 @@ const twoStepProps = useTwoStepModalProps({
   // }, []);
 
 
-const hasUnsavedSelections = Object.keys(selectedBooths).length > 0;
+// const hasUnsavedSelections = Object.keys(selectedBooths).length > 0;
 
 // Create a confirmation function
-const confirmLocationChange = useCallback((callback: () => void) => {
-  if (hasUnsavedSelections) {
-    const confirmed = window.confirm(
-      'You have unsaved booth selections. Switching locations will clear your current selections. Continue?'
-    );
-    if (confirmed) {
-      callback();
-    }
-  } else {
-    callback();
-  }
-}, [hasUnsavedSelections]);
+// const confirmLocationChange = useCallback((callback: () => void) => {
+//   if (hasUnsavedSelections) {
+//     const confirmed = window.confirm(
+//       'You have unsaved booth selections. Switching locations will clear your current selections. Continue?'
+//     );
+//     if (confirmed) {
+//       callback();
+//     }
+//   } else {
+//     callback();
+//   }
+// }, [hasUnsavedSelections]);
 
 // In your TradeFairMap component, update the clearAllLocationSelections function:
 const clearAllLocationSelections = useCallback(() => {
@@ -2424,8 +2424,9 @@ const showAfricaHall = useCallback(() => {
       title: layoutData.title
     });
    };
-   confirmLocationChange(proceedWithChange);
-}, [clearAllSelections, confirmLocationChange]);
+   proceedWithChange()
+  //  confirmLocationChange(proceedWithChange);
+}, [clearAllSelections]);
 
   const showHallB = useCallback(() => {
     const proceedWithChange = () => {
@@ -2457,8 +2458,10 @@ const showAfricaHall = useCallback(() => {
       title: layoutData.title
     });
    };
-   confirmLocationChange(proceedWithChange);
-}, [clearAllSelections, confirmLocationChange]);
+   proceedWithChange()
+  //  confirmLocationChange(proceedWithChange);
+}, [clearAllSelections]);
+
 
   const showInternationalHall = useCallback(() => {
      const proceedWithChange = () => {
@@ -2496,8 +2499,10 @@ const showAfricaHall = useCallback(() => {
       title: layoutData.title
     });
   };
-    confirmLocationChange(proceedWithChange);
-}, [clearAllSelections, confirmLocationChange]);
+   proceedWithChange()
+  //  confirmLocationChange(proceedWithChange);
+}, [clearAllSelections]);
+
 
   const showSectorInfo = useCallback((sectorCode: string) => {
      const proceedWithChange = () => {
@@ -2524,8 +2529,10 @@ const showAfricaHall = useCallback(() => {
       title: layoutData.title
     });
   };
-    confirmLocationChange(proceedWithChange);
-}, [clearAllSelections, confirmLocationChange]);
+   proceedWithChange()
+  //  confirmLocationChange(proceedWithChange);
+}, [clearAllSelections]);
+
 
 
 // const showInternationalHall = useCallback(() => {
@@ -2770,7 +2777,7 @@ useEffect(() => {
         <CoordinateDisplay visible={coordinatesMode} coords={mouseCoords} />
 
         {/* Status Display */}
-        <StatusDisplay />
+        {/* <StatusDisplay /> */}
 
         {/* Site Plan Container */}
         {/* Site Plan Container */}

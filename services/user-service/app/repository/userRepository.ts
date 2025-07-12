@@ -162,6 +162,16 @@ export class UserRepository {
                 (user as Exhibitor).company = updates.company;
             }
         }
+        if (updates.booth_preference !== undefined) {
+            if (user.user_type === UserType.Exhibitor) {
+                (user as Exhibitor).booth_preference = updates.booth_preference;
+            }
+        }
+        if (updates.booth_type !== undefined) {
+            if (user.user_type === UserType.Exhibitor) {
+                (user as Exhibitor).booth_type = updates.booth_type;
+            }
+        }
         if (updates.status !== undefined) {
             if (user.user_type === UserType.Exhibitor) {
                 (user as Exhibitor).status = updates.status;
@@ -209,7 +219,9 @@ export class UserRepository {
           email,
           phone,
           company,
-          address: { address_line1, address_line2, city, state, country },
+          booth_preference,
+          booth_type,
+          address: { address_line1, address_line2, city, state, country, is_primary },
         }: {
           first_name: string;
           last_name: string;
@@ -217,6 +229,8 @@ export class UserRepository {
           email: string;
           phone: string;
           company?: string;
+          booth_preference?: string;
+          booth_type?: string;
           address: AddressModel;
         }
       ): Promise<User> {
@@ -227,7 +241,9 @@ export class UserRepository {
           first_name,
           last_name,
           user_type,
-          company
+          company,
+          booth_preference,
+          booth_type
         });
       
         // Create and save address
@@ -237,7 +253,8 @@ export class UserRepository {
           address_line2,
           city,
           state,
-          country
+          country,
+          is_primary
         });
       
         await this.addressRepository.save(address);

@@ -1,6 +1,6 @@
 // components/BoothsData/layouts/africaHallConfig.ts
 
-import { LayoutConfig } from '../types/layout.types';
+import { LayoutConfig, SpecialBoothRestriction } from '../types/layout.types';
 
 export const africaHallConfig: LayoutConfig = {
   layoutId: 'africa-hall',
@@ -18,15 +18,15 @@ export const africaHallConfig: LayoutConfig = {
       sectionId: 'left-section'
     },
     
-    // Column 2: Middle Double Column - Upper Section (Special 6m² booths)
+    // Column 2: Middle Double Column - S-series booths in 2x13 grid
     {
-      columnId: 'col-2-upper',
+      columnId: 'col-2',
       columnType: 'double',
-      subColumns: ['col-2a-upper', 'col-2b-upper'],
+      subColumns: ['col-2a', 'col-2b'],
       boothRange: ['S017', 'S018', 'S019', 'S020', 'S021', 'S022', 'S023', 'S024', 'S025', 'S026', 'S027', 'S028', 'S029', 'S030', 'S031', 'S032', 'S033', 'S034', 'S035', 'S036', 'S037', 'S038', 'S039', 'S040', 'S041', 'S042'],
       numberingOrder: 'ascending',
       isolatedFromOthers: false,
-      sectionId: 'middle-upper-section'
+      sectionId: 'middle-section'
     },
     
     // Column 3: Right Single Column (N043-N058)
@@ -45,10 +45,10 @@ export const africaHallConfig: LayoutConfig = {
     {
       passageId: 'vertical-passage-1',
       type: 'main-aisle',
-      separates: ['col-1', 'col-2-upper'],
+      separates: ['col-1', 'col-2'],
       blocksSequential: true,
-      coordinates: [[250, 150], [250, 900]], // Approximate vertical line
-      description: 'Main aisle between left single column and middle special booths',
+      coordinates: [[250, 150], [250, 900]],
+      description: 'Main aisle between left N-series and middle S-series',
       isVisible: true
     },
     
@@ -56,21 +56,10 @@ export const africaHallConfig: LayoutConfig = {
     {
       passageId: 'vertical-passage-2',
       type: 'main-aisle',
-      separates: ['col-2-upper', 'col-3'],
+      separates: ['col-2', 'col-3'],
       blocksSequential: true,
-      coordinates: [[550, 150], [550, 900]], // Approximate vertical line
-      description: 'Main aisle between middle special booths and right single column',
-      isVisible: true
-    },
-    
-    // Horizontal Gap: Between upper special booths and empty lower area
-    {
-      passageId: 'horizontal-gap',
-      type: 'corridor',
-      separates: ['col-2-upper', 'empty-lower-section'],
-      blocksSequential: true,
-      coordinates: [[250, 600], [550, 600]], // Approximate horizontal line
-      description: 'Gap between special booth area and empty lower section',
+      coordinates: [[550, 150], [550, 900]],
+      description: 'Main aisle between middle S-series and right N-series',
       isVisible: true
     },
     
@@ -80,7 +69,7 @@ export const africaHallConfig: LayoutConfig = {
       type: 'door',
       separates: ['main-area', 'entrance'],
       blocksSequential: true,
-      coordinates: [[350, 100], [450, 100]], // Top entrance
+      coordinates: [[350, 100], [450, 100]],
       description: 'Top entrance to Africa Hall',
       isVisible: true
     },
@@ -91,280 +80,44 @@ export const africaHallConfig: LayoutConfig = {
       type: 'door',
       separates: ['main-area', 'entrance'],
       blocksSequential: true,
-      coordinates: [[350, 950], [450, 950]], // Bottom entrance
+      coordinates: [[350, 950], [450, 950]],
       description: 'Main front entrance to Africa Hall',
       isVisible: true
-    }
+    },
+
+     {
+    passageId: 'horizontal-passage-1',
+    type: 'corridor' as const,
+    separates: ['upper-s-section', 'lower-s-section'],
+    blocksSequential: true,
+    coordinates: [[1400, 1700], [1800, 1700]], // Approximate coordinates
+    description: 'Corridor between upper and lower S-series sections',
+    isVisible: true
+  }
   ],
   
   specialBooths: [
     // All S-series booths are special 6m² booths
-    {
-      boothId: 'S017',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S018',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S019',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S020',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S021',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S022',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S023',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S024',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S025',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S026',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S027',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S028',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S029',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S030',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S031',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S032',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S033',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S034',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S035',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S036',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S037',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S038',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S039',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S040',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S041',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    },
-    {
-      boothId: 'S042',
-      treatAsSeparate: false,
-      restrictions: ['different-pricing'],
-      pricing: {
-        overrideStandardPricing: true,
-        customSqm: 6,
-        customCategory: 'Special'
-      }
-    }
+    ...Array.from({ length: 26 }, (_, i) => {
+      const boothNum = i + 17;
+      const paddedNum = boothNum.toString().padStart(3, '0');
+      return {
+        boothId: `S${paddedNum}`,
+        treatAsSeparate: false,
+        restrictions: ['different-pricing'] as SpecialBoothRestriction[],
+        pricing: {
+          overrideStandardPricing: true,
+          customSqm: 6,
+          customCategory: 'Special'
+        }
+      };
+    })
   ],
   
   sequentialRules: {
     // Define which booths can connect sequentially
     allowedConnections: {
-      // Column 1: Only vertical connections within column
+      // Column 1: N-series left side - only vertical connections
       'N001': ['N002'],
       'N002': ['N001', 'N003'],
       'N003': ['N002', 'N004'],
@@ -382,35 +135,41 @@ export const africaHallConfig: LayoutConfig = {
       'N015': ['N014', 'N016'],
       'N016': ['N015'],
       
-      // Special booths: S017-S042 (arranged in pairs, side by side)
-      'S017': ['S018', 'S030'], // Can connect to adjacent booth horizontally and below
-      'S018': ['S017', 'S019', 'S031'], // Can connect horizontally
+      // S-series booths - LEFT SUB-COLUMN (vertical connections within column)
+      'S017': ['S018', 'S030'], // Can connect down and horizontally
+      'S018': ['S017', 'S019', 'S031'],
       'S019': ['S018', 'S020', 'S032'],
       'S020': ['S019', 'S021', 'S033'],
       'S021': ['S020', 'S022', 'S034'],
-      'S022': ['S021', 'S023', 'S035'],
-      'S023': ['S022', 'S036'], // Last in row
-      'S024': ['S025', 'S037'], // Start of right column
+      // 'S022': ['S021', 'S023', 'S035'],
+      'S022': ['S021', 'S035'], // Can only connect down and right
+      'S023': ['S024', 'S036'], // Can only connect up and right
+      // 'S023': ['S022', 'S024', 'S036'],
+      'S024': ['S023', 'S025', 'S037'],
       'S025': ['S024', 'S026', 'S038'],
       'S026': ['S025', 'S027', 'S039'],
       'S027': ['S026', 'S028', 'S040'],
       'S028': ['S027', 'S029', 'S041'],
-      'S029': ['S028', 'S042'],
-      'S030': ['S017', 'S031'], // Second row
+      'S029': ['S028', 'S042'], // Top of left column
+      
+      // S-series booths - RIGHT SUB-COLUMN (vertical connections within column)
+      'S030': ['S017', 'S031'], // Bottom of right column
       'S031': ['S018', 'S030', 'S032'],
       'S032': ['S019', 'S031', 'S033'],
       'S033': ['S020', 'S032', 'S034'],
       'S034': ['S021', 'S033', 'S035'],
-      'S035': ['S022', 'S034', 'S036'],
-      'S036': ['S023', 'S035'],
-      'S037': ['S024', 'S038'],
+      // 'S035': ['S022', 'S034', 'S036'],
+      'S035': ['S034', 'S022'], // Can only connect down and left
+      // 'S036': ['S023', 'S035', 'S037'],
+      'S036': ['S023', 'S037'], // Can only connect left and up
+      'S037': ['S024', 'S036', 'S038'],
       'S038': ['S025', 'S037', 'S039'],
       'S039': ['S026', 'S038', 'S040'],
       'S040': ['S027', 'S039', 'S041'],
       'S041': ['S028', 'S040', 'S042'],
-      'S042': ['S029', 'S041'],
+      'S042': ['S029', 'S041'], // Top of right column
       
-      // Column 3: Only vertical connections within column
+      // Column 3: N-series right side - only vertical connections
       'N043': ['N044'],
       'N044': ['N043', 'N045'],
       'N045': ['N044', 'N046'],
@@ -432,24 +191,28 @@ export const africaHallConfig: LayoutConfig = {
     columnRestrictions: {
       'col-1': { 
         isolatedColumn: true,
-        maxContinuousSelection: 16
+        maxContinuousSelection: 16,
+        requiresMinimumSelection: 1
       },
-      'col-2-upper': { 
+      'col-2': { 
         isolatedColumn: false,
-        maxContinuousSelection: 26 // All special booths
+        maxContinuousSelection: 26,
+        requiresMinimumSelection: 1,
+        allowedSubColumns: ['col-2a', 'col-2b']
       },
       'col-3': { 
         isolatedColumn: true,
-        maxContinuousSelection: 16
+        maxContinuousSelection: 16,
+        requiresMinimumSelection: 1
       }
     },
     
     globalRules: {
       preventCrossPassageBooking: true,
-      allowRowWiseBooking: true, // In special booth area
-      allowColumnWiseBooking: true, // In special booth area
-      allowMixedBooking: true, // Combination of row and column
-      enforceStrictAdjacency: true // Must be immediately adjacent
+      allowRowWiseBooking: true, // S-series can book horizontally
+      allowColumnWiseBooking: true, // All booths can book vertically
+      allowMixedBooking: true, // S-series can mix row and column
+      enforceStrictAdjacency: true
     }
   },
   
@@ -464,7 +227,7 @@ export const africaHallConfig: LayoutConfig = {
           'S027', 'S028', 'S029', 'S030', 'S031', 'S032', 'S033', 'S034', 'S035', 'S036',
           'S037', 'S038', 'S039', 'S040', 'S041', 'S042'
         ],
-        description: 'Special 6m² booths in central area'
+        description: 'Special 6m² booths in central double column'
       },
       {
         type: '9m²',
@@ -475,19 +238,18 @@ export const africaHallConfig: LayoutConfig = {
           'N047', 'N048', 'N049', 'N050', 'N051', 'N052', 'N053', 'N054', 'N055', 'N056',
           'N057', 'N058'
         ],
-        description: 'Standard 9m² booths on sides'
+        description: 'Standard 9m² booths in side columns'
       }
     ],
     lastUpdated: new Date().toISOString(),
-    version: '1.0.0',
+    version: '2.0.0',
     validatedBy: 'System',
     notes: [
       'Africa Hall features a unique layout with special 6m² booths in the center',
-      'Center area has 26 special booths arranged in a 2x13 grid',
-      'Side columns have standard 9m² booths',
-      'Lower section of the center area is empty (shown with dotted lines)',
-      'Special booths allow both horizontal and vertical connections',
-      'Configuration validated against actual Africa Hall layout diagram'
+      'S-series booths are arranged in a 2x13 grid allowing both horizontal and vertical connections',
+      'N-series booths are in single columns on both sides, allowing only vertical connections',
+      'Passages separate the three main sections but S-series booths can connect across their sub-columns',
+      'Configuration corrected to properly define all vertical connections for S-series booths'
     ]
   }
 };

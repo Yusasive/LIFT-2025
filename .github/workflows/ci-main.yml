@@ -1,0 +1,144 @@
+name: Main CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - test
+      - dev
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - test
+  #     - dev
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      domain_name: ${{ steps.set-env.outputs.domain_name }}
+      aws_region: ${{ steps.set-env.outputs.aws_region }}
+      changed_files: ${{ steps.changed_files.outputs.changed_files }}
+    steps:
+      - name: Set environment variables
+        id: set-env
+        run: |
+          if [[ $GITHUB_REF == "refs/heads/main" ]]; then
+            echo "environment=prod" >> $GITHUB_OUTPUT
+          elif [[ $GITHUB_REF == "refs/heads/dev" ]]; then
+            echo "environment=dev" >> $GITHUB_OUTPUT
+          else
+            echo "environment=test" >> $GITHUB_OUTPUT
+          fi
+          echo "aws_region=eu-west-1" >> $GITHUB_OUTPUT
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Get files changed in this commit and set output
+        id: changed_files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          commit_sha=${{ github.sha }}
+          repo=${{ github.repository }}
+          echo "Fetching details for commit $commit_sha in repo $repo"
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/$repo/commits/$commit_sha \
+              -o commit.json
+          # Extract file names and join them into a comma-separated list.
+          files=$(jq -r '.files[].filename' commit.json | paste -sd ',' -)
+          echo "Files changed: $files"
+          echo "changed_files=$files" >> $GITHUB_OUTPUT
+
+  infra:
+    needs: [setup]
+    if: |
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') &&
+      contains(needs.setup.outputs.changed_files, 'infra')
+    uses: ./.github/workflows/infra.yml
+    with:
+      environment: ${{ needs.setup.outputs.environment }}
+      aws_region: ${{ needs.setup.outputs.aws_region }}
+    secrets: inherit
+  
+  auth-service:
+    needs: [setup]
+    if: |
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') &&
+      contains(needs.setup.outputs.changed_files, 'services/auth-service')
+    uses: ./.github/workflows/auth-service.yml
+    with:
+      environment: ${{ needs.setup.outputs.environment }}
+      aws_region: ${{ needs.setup.outputs.aws_region }}
+    secrets: inherit
+
+  booth-service:
+    needs: [setup]
+    if: |
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') &&
+      contains(needs.setup.outputs.changed_files, 'services/booth-service')
+    uses: ./.github/workflows/booth-service.yml
+    with:
+      environment: ${{ needs.setup.outputs.environment }}
+      aws_region: ${{ needs.setup.outputs.aws_region }}
+    secrets: inherit
+
+  communication-service:
+    needs: [setup]
+    if: |
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') &&
+      contains(needs.setup.outputs.changed_files, 'services/communication-service')
+    uses: ./.github/workflows/communication-service.yml
+    with:
+      environment: ${{ needs.setup.outputs.environment }}
+      aws_region: ${{ needs.setup.outputs.aws_region }}
+    secrets: inherit
+
+  helpdesk-service:
+    needs: [setup]
+    if: |
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') &&
+      contains(needs.setup.outputs.changed_files, 'services/helpdesk-service')
+    uses: ./.github/workflows/helpdesk-service.yml
+    with:
+      environment: ${{ needs.setup.outputs.environment }}
+      aws_region: ${{ needs.setup.outputs.aws_region }}
+    secrets: inherit
+
+  payment-service:
+    needs: [setup]
+    if: |
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') &&
+      contains(needs.setup.outputs.changed_files, 'services/payment-service')
+    uses: ./.github/workflows/payment-service.yml
+    with:
+      environment: ${{ needs.setup.outputs.environment }}
+      aws_region: ${{ needs.setup.outputs.aws_region }}
+    secrets: inherit
+
+  user-service:
+    needs: [setup]
+    if: |
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test') &&
+      contains(needs.setup.outputs.changed_files, 'services/user-service')
+    uses: ./.github/workflows/user-service.yml
+    with:
+      environment: ${{ needs.setup.outputs.environment }}
+      aws_region: ${{ needs.setup.outputs.aws_region }}
+    secrets: inherit
+
+
+
+
+
+  

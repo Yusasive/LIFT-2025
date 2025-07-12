@@ -66,6 +66,13 @@ functions:
           path: /booth/reservations
           method: get
 
+  updateBoothReservation:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/reservations
+          method: patch
+
   getReservedBooths:
     handler: app/handlers/boothHandler.handler
     events:
@@ -93,6 +100,25 @@ functions:
       - httpApi:
           path: /booth/{id}
           method: get
+
+  getBooths:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/all
+          method: get
+
+  getBoothSectors:
+    handler: app/handlers/boothHandler.handler
+    events:
+      - httpApi:
+          path: /booth/sector
+          method: get
+
+  boothCleanupCron:
+    handler: app/handlers/boothCleanupHandler.handler
+    events:
+      - schedule: cron(0 0 * * ? *)
   
   runMigration:
     handler: app/config/runMigration.handler

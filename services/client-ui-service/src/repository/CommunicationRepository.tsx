@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { EMAIL_BASE_URL } from '../common/TextStrings';
 
+export interface EmailAttachment {
+    filename: string;
+    content: string;
+    contentType: string;
+}
+
 export interface SendEmailRequest {
     to: string[];
     subject: string;
@@ -8,13 +14,9 @@ export interface SendEmailRequest {
     textBody?: string;
     from?: string;
     replyTo?: string[];
+    cc?: string[];
+    bcc?: string[];
     attachments?: EmailAttachment[];
-}
-
-export interface EmailAttachment {
-    filename: string;
-    content: string;
-    contentType: string;
 }
 
 export class CommunicationRepository {

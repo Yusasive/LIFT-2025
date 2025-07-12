@@ -8,7 +8,10 @@ import { getEnhancedBoothsForLocation } from './components/BoothsData/boothDataM
 // import BoothValidationIndicator from './components/BoothValidationIndicator';
 // import SmartSelectionHints from './components/SmartSelectionHints';
 import { INDOOR_PRICING, OUTDOOR_PRICING, PREMIUM_OUTDOOR_PRICING, MINIMUM_REQUIREMENTS } from './components/BoothsData/pricingConfig';
-import EnhancedLayoutDisplay from './components/EnhancedLayoutDisplay';
+//import EnhancedLayoutDisplay from './components/EnhancedLayoutDisplay';
+// Add this import at the top
+import EnhancedLayoutDisplayGrid from './components/EnhancedLayoutDisplayGrid';
+import './style/booth-grid.css'
 // import { calculatePackagePrice, groupBoothsByLocation } from '../../../../utils/priceCalculations';
 // Enhanced UnifiedInteractiveLayout component with Phase 3 features
 interface BoothData {
@@ -87,12 +90,12 @@ const EnhancedUnifiedInteractiveLayout: React.FC<{
   // Initialize validation engine
   const {
     validateBoothSelection,
-    getValidNextBooths,
+    // getValidNextBooths,
     getSuggestedBooths,
-    getBlockedBooths,
+    // getBlockedBooths,
     getSelectionAnalysis,
     // getValidationSummary,
-    getFormattedError,
+    // getFormattedError,
     getUserMessage,
     layoutConfig,
     isConfigured,
@@ -105,24 +108,98 @@ const EnhancedUnifiedInteractiveLayout: React.FC<{
   });
 
   // Current selections as array
-  const currentSelections = Object.keys(selectedBooths);
-
+const currentSelections = React.useMemo(() => {
+  return Object.keys(selectedBooths);
+}, [selectedBooths]);
+//console.log('🔍 [DIAGNOSTIC] Current Selections:', currentSelections);
   // Get validation state sets
-  const validNextBooths = React.useMemo(() => 
-    new Set(getValidNextBooths(currentSelections)), 
-    [getValidNextBooths, currentSelections]
-  );
+  // const validNextBooths = React.useMemo(() => 
+  //   new Set(getValidNextBooths(currentSelections)), 
+  //   [getValidNextBooths, currentSelections]
+  // );
+// In EnhancedBoothManagement.tsx, let's ensure we're passing the correct selections:
 
-  const suggestedBooths = React.useMemo(() => 
-    new Set(getSuggestedBooths(currentSelections)), 
-    [getSuggestedBooths, currentSelections]
-  );
+// In EnhancedBoothManagement.tsx, replace the entire validNextBooths memo with this:
 
-  const blockedBooths = React.useMemo(() => 
-    new Set(getBlockedBooths(currentSelections)), 
-    [getBlockedBooths, currentSelections]
-  );
+// Add this debugging to your validNextBooths calculation in EnhancedBoothManagement.tsx:
 
+const validNextBooths = React.useMemo(() => {
+  const selections = Object.keys(selectedBooths);
+  console.log('🟢 [DIAGNOSTIC] Computing valid next booths for selections:', selections);
+  
+  if (!isConfigured || !layoutConfig) {
+    console.log('🟢 [DIAGNOSTIC] Not configured, returning empty set');
+    return new Set<string>();
+  }
+  
+  if (selections.length === 0) {
+    const allBooths = layoutConfig.columns.flatMap(col => col.boothRange);
+    console.log('🟢 [DIAGNOSTIC] First selection, all booths valid:', allBooths.length);
+    return new Set(allBooths);
+  }
+  
+  // Get allowed connections for all selected booths
+  const validBooths = new Set<string>();
+  selections.forEach(selectedBooth => {
+    const connections = layoutConfig.sequentialRules.allowedConnections[selectedBooth] || [];
+    console.log(`🟢 [DIAGNOSTIC] ${selectedBooth} connections:`, connections);
+    
+    connections.forEach(booth => {
+      if (!selections.includes(booth)) {
+        validBooths.add(booth);
+        console.log(`🟢 [DIAGNOSTIC] Added ${booth} as valid from ${selectedBooth}`);
+      }
+    });
+  });
+  
+  console.log('🟢 [DIAGNOSTIC] All valid next booths:', Array.from(validBooths));
+  console.log('🟢 [DIAGNOSTIC] Is S036 in valid set?', validBooths.has('S036'));
+  
+  // Check specifically for S036
+  if (selections.includes('S023')) {
+    const s023Connections = layoutConfig.sequentialRules.allowedConnections['S023'];
+    console.log('🟢 [DIAGNOSTIC] S023 is selected, its connections:', s023Connections);
+    console.log('🟢 [DIAGNOSTIC] Does S023 connect to S036?', s023Connections?.includes('S036'));
+  }
+  
+  return validBooths;
+}, [selectedBooths, isConfigured, layoutConfig]);
+
+
+const suggestedBooths = React.useMemo(() => {
+  const suggested = new Set(getSuggestedBooths(currentSelections));
+  console.log('🟡 [DIAGNOSTIC] Suggested Booths:', Array.from(suggested));
+  return suggested;
+}, [currentSelections, getSuggestedBooths]);
+
+// In EnhancedBoothManagement.tsx, update the blockedBooths calculation:
+
+// Then update the blockedBooths calculation to depend on selectedBooths directly:
+// In EnhancedBoothManagement.tsx
+
+// In EnhancedBoothManagement.tsx, update the blockedBooths calculation with better debugging:
+
+const blockedBooths = React.useMemo(() => {
+  if (!layoutConfig) return new Set<string>();
+  
+  console.log('🔴 [DIAGNOSTIC] Computing blocked booths...');
+  console.log('🔴 [DIAGNOSTIC] Current selections:', currentSelections);
+  console.log('🔴 [DIAGNOSTIC] Valid next booths set size:', validNextBooths.size);
+  console.log('🔴 [DIAGNOSTIC] Valid next booths:', Array.from(validNextBooths));
+  
+  const allBooths = layoutConfig.columns.flatMap(col => col.boothRange);
+  
+  // Filter out selected booths and valid next booths
+  const blocked = allBooths.filter(boothId => 
+    !currentSelections.includes(boothId) && !validNextBooths.has(boothId)
+  );
+  
+  console.log('🔴 [DIAGNOSTIC] Blocked booths count:', blocked.length);
+  console.log('🔴 [DIAGNOSTIC] Is S028 blocked?', blocked.includes('S028'));
+  console.log('🔴 [DIAGNOSTIC] Is S042 blocked?', blocked.includes('S042'));
+  
+  return new Set(blocked);
+}, [currentSelections, validNextBooths, layoutConfig]);
   // Get analysis data
   const selectionAnalysis = React.useMemo(() => 
     getSelectionAnalysis(), 
@@ -135,36 +212,53 @@ const EnhancedUnifiedInteractiveLayout: React.FC<{
   // );
 
   // Enhanced booth click handler with validation
-  const handleBoothClick = useCallback((boothId: string) => {
-    if (!isConfigured) {
-      console.warn('Validation engine not configured, proceeding without validation');
-      onBoothClick(boothId);
-      return;
-    }
+ // In EnhancedBoothManagement.tsx, update the handleBoothClick function:
 
-    // Check if booth is already selected
-    if (selectedBooths[boothId]) {
-      onBoothClick(boothId); // Will remove the booth
-      return;
-    }
+const handleBoothClick = useCallback((boothId: string) => {
+  console.log('\n=== 🖱️ BOOTH CLICK EVENT ===');
+  console.log('Clicked Booth:', boothId);
+  console.log('Current Selections:', currentSelections);
+  console.log('Is in validNextBooths?', validNextBooths.has(boothId));
+  console.log('Is in blockedBooths?', blockedBooths.has(boothId));
+  
+  if (!isConfigured) {
+    console.warn('❌ Validation engine not configured, proceeding without validation');
+    onBoothClick(boothId);
+    return;
+  }
 
-    // Validate the selection
-    const validationResult = validateBoothSelection(currentSelections, boothId);
-    
-    if (validationResult.isValid) {
-      onBoothClick(boothId); // Proceed with selection
-    } else {
-      // Show validation error
-      const formattedError = getFormattedError(validationResult);
-      const userMessage = getUserMessage(boothId, currentSelections, validationResult);
-      
-      // You could show this in a toast/notification
-      console.log('Validation failed:', formattedError);
-      alert(userMessage); // Temporary - replace with proper notification
-    }
-  }, [isConfigured, selectedBooths, validateBoothSelection, currentSelections, onBoothClick, getFormattedError, getUserMessage]);
+  // Check if booth is already selected
+  if (selectedBooths[boothId]) {
+    console.log('➖ Removing booth from selection');
+    onBoothClick(boothId);
+    return;
+  }
 
-  // Handle smart hint actions
+  // Check if booth is in valid next booths
+  if (validNextBooths.has(boothId)) {
+    console.log('✅ Booth is in valid next booths, proceeding with selection');
+    onBoothClick(boothId);
+    return;
+  }
+
+  // If we get here, the booth is not valid
+  console.log('❌ Booth is not in valid next booths');
+  
+  // Validate the selection to get detailed error message
+  const validationResult = validateBoothSelection(currentSelections, boothId);
+  console.log('Validation Result:', validationResult);
+  
+  if (validationResult.isValid) {
+    console.log('✅ Validation passed (unexpected), adding booth');
+    onBoothClick(boothId);
+  } else {
+    console.log('❌ Validation failed');
+    const userMessage = getUserMessage(boothId, currentSelections, validationResult);
+    alert(userMessage);
+  }
+  
+  console.log('=== END BOOTH CLICK ===\n');
+}, [isConfigured, selectedBooths, currentSelections, onBoothClick, validNextBooths, blockedBooths, validateBoothSelection, getUserMessage]);  // Handle smart hint actions
   // const handleBoothSuggestionClick = useCallback((boothId: string) => {
   //   handleBoothClick(boothId);
   // }, [handleBoothClick]);
@@ -294,7 +388,7 @@ const EnhancedUnifiedInteractiveLayout: React.FC<{
           </span>
         </h4>
         
-        <EnhancedLayoutDisplay
+        {/* <EnhancedLayoutDisplay
           layoutData={layoutData}
           enhancedBooths={enhancedBooths}
           currentSelections={currentSelections}
@@ -304,7 +398,20 @@ const EnhancedUnifiedInteractiveLayout: React.FC<{
           onBoothClick={handleBoothClick}
           showPassageOverlay={!!canShowEnhancedFeatures}
           layoutConfig={layoutConfig}
-        />
+        /> */}
+
+ <EnhancedLayoutDisplayGrid
+    layoutData={layoutData}
+    enhancedBooths={enhancedBooths}
+    currentSelections={currentSelections}
+    validNextBooths={validNextBooths}
+    suggestedBooths={suggestedBooths}
+    blockedBooths={blockedBooths}
+    onBoothClick={handleBoothClick}
+    showPassageOverlay={!!canShowEnhancedFeatures}
+    layoutConfig={layoutConfig}
+  />
+
       </div>
         {hasExistingBooths && (
         <SelectionSummary
@@ -415,7 +522,7 @@ const EnhancedUnifiedInteractiveLayout: React.FC<{
               : 'Use the interactive booth layout above to select your preferred booths, then use the export function to generate your booking request.')
           : 'Start by activating the coordinate picker and drawing booth boundaries on the layout image.'
         }<br /><br />
-        <strong>Indoor Rate: ₦{layoutData.ratePerSqm.toLocaleString()}/m²</strong>
+        {/* <strong>Indoor Rate: ₦{layoutData.ratePerSqm.toLocaleString()}/m²</strong> */}
       </div>
     </div>
   );
@@ -613,7 +720,7 @@ const getEntitlements = (totalSqm: number, locationType: string, booths?: any[])
 const getLocationType = (locationName: string, booths: any[]): 'indoor' | 'outdoor' | 'premium-outdoor' => {
   // Check if it's a hall (indoor) or sector (outdoor)
   const isHall = locationName.toLowerCase().includes('hall');
-  const isSector = ['fda', 'hct', 'eei', 'cga', 'ta', 'rbf', 'cog', 'oth'].some(
+  const isSector = ['fda', 'hct', 'eei', 'cga', 'ta', 'rbf', 'cog', 'oth','ICT & Electronics Products'].some(
     sector => locationName.toLowerCase().includes(sector.toLowerCase())
   );
   
@@ -631,28 +738,51 @@ const getLocationType = (locationName: string, booths: any[]): 'indoor' | 'outdo
   return 'indoor';
 };
 
-  const calculatePackagePrice = (totalSqm: number, locationType: string, booths?: any[]): number | null => {
-    const actualLocationType = booths ? getLocationType(locationType, booths) : 'indoor';
-    
-    const pricingTable = 
-      actualLocationType === 'indoor' ? INDOOR_PRICING :
-      actualLocationType === 'premium-outdoor' ? PREMIUM_OUTDOOR_PRICING :
-      OUTDOOR_PRICING;
-    
-    if (pricingTable[totalSqm]) {
-      return pricingTable[totalSqm].price;
+
+const calculatePackagePrice = (totalSqm: number, locationType: string, booths?: any[]): number | null => {
+  const actualLocationType = booths ? getLocationType(locationType, booths) : 'indoor';
+  
+  const pricingTable = 
+    actualLocationType.trim() === 'indoor' ? INDOOR_PRICING :
+    actualLocationType.trim() === 'premium-outdoor' ? PREMIUM_OUTDOOR_PRICING :
+    OUTDOOR_PRICING;
+  
+  if (actualLocationType.trim() === 'indoor') {
+    // Return 0 if no booths
+    if (!booths || booths.length === 0) {
+      return 0;
     }
     
-    return null;
-  };
+    const sqm = booths[0].sqm;
+    console.log("BOO 2027", JSON.stringify(booths));
+    
+    // Check if pricing exists for this sqm
+    if (!pricingTable[sqm]) {
+      return null; // No pricing found for this sqm
+    }
+    
+    // Since we already checked booths exists, we can use booths.length directly
+    return pricingTable[sqm].price * booths.length;
+  } else {
+    // For outdoor/premium-outdoor, use totalSqm
+    if (!pricingTable[totalSqm]) {
+      return null; // No pricing found for this totalSqm
+    }
+    
+    return pricingTable[totalSqm].price;
+  }
+};
 
   const validateMinimumRequirement = (totalSqm: number, locationType: string, booths?: any[]): {
     isValid: boolean;
     message: string;
   } => {
-    const actualLocationType = booths ? getLocationType(locationType, booths) : 'indoor';
+    const actualLocationType = booths ? getLocationType(currentLocationName, booths) : 'indoor';
+    console.log('Indigestion',actualLocationType)
+    console.log("Location Type", locationType);
+   // let actual= actualLocationType.trim().toLowerCase();
     const minimum = MINIMUM_REQUIREMENTS[actualLocationType];
-    
+    console.log("Actual location 3035:",totalSqm, minimum,actualLocationType)
     if (totalSqm < minimum) {
       return {
         isValid: false,
@@ -668,7 +798,8 @@ const getLocationType = (locationName: string, booths: any[]): 'indoor' | 'outdo
 
   const isAllSelectionsValid = (groupedSelections: Record<string, any>): boolean => {
     return Object.values(groupedSelections).every(data => {
-      const validation = validateMinimumRequirement(data.totalSqm, data.locationType, data.booths);
+      console.log("Validating data 2334:", data);
+      const validation = validateMinimumRequirement(data.totalSqm, data.locationName, data.booths);
       return validation.isValid;
     });
   };
@@ -806,6 +937,7 @@ const getLocationType = (locationName: string, booths: any[]): 'indoor' | 'outdo
           <button
             onClick={(e) => {
               e.stopPropagation();
+              if(allValid)
               onCompleteReservation();
             }}
             className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white border-none rounded cursor-pointer font-bold text-xs hover:bg-blue-700 transition-all duration-200"

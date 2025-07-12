@@ -4,7 +4,6 @@ import { UserType } from "../UserType";
 
 export class SignupInput extends LoginInput {
     @IsString()
-    @Length(10, 13)
     phone: string;
 
     @IsEnum(UserType)

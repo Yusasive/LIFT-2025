@@ -209,24 +209,25 @@ export const hallAConfig: LayoutConfig = {
       'N022': ['N021', 'N023', 'N015'],
       'N023': ['N022', 'N016'],
       
-      // Column 3a: Vertical within column + horizontal to 3b (same row), blocked by horizontal passage
-      'N024': ['N025', 'N032'], // Can connect to N032 (same row, column 3b)
-      'N025': ['N024', 'N026', 'N033'],
-      'N026': ['N025', 'N027', 'N034'],
-      'N027': ['N026', 'N035'], // N027 CANNOT connect to N028 due to horizontal passage
-      'N028': ['N029', 'N036'], // N028 CANNOT connect to N027 due to horizontal passage
-      'N029': ['N028', 'N030', 'N037'],
-      'N030': ['N029', 'N031', 'N038'],
-      'N031': ['N030'], // No horizontal connection as N038 is the last booth
-      
-      // Column 3b: Vertical within column + horizontal to 3a (same row), blocked by horizontal passage
-      'N032': ['N033', 'N024'],
-      'N033': ['N032', 'N034', 'N025'],
-      'N034': ['N033', 'N035', 'N026'],
-      'N035': ['N034', 'N027'], // N035 CANNOT connect to N036 due to horizontal passage
-      'N036': ['N037', 'N028'], // N036 CANNOT connect to N035 due to horizontal passage
-      'N037': ['N036', 'N038', 'N029'],
-      'N038': ['N037', 'N030'],
+    // Column 3a connections (N024-N030)
+'N030': ['N029', 'N037'], // Row 2: down to N029, right to N037
+'N029': ['N030', 'N028', 'N036'], // Row 3: up/down, right to N036
+'N028': ['N029', 'N035'], // Row 4: up to N029, right to N035 (no down - passage)
+// Horizontal passage at row 5
+'N027': ['N026', 'N034'], // Row 6: down to N026, right to N034 (no up - passage)
+'N026': ['N027', 'N025', 'N033'], // Row 7: up/down, right to N033
+'N025': ['N026', 'N024', 'N032'], // Row 8: up/down, right to N032
+'N024': ['N025', 'N031'], // Row 9: up to N025, right to N031
+
+// Column 3b connections (N031-N037)
+'N037': ['N036', 'N030'], // Row 2: down to N036, left to N030
+'N036': ['N037', 'N035', 'N029'], // Row 3: up/down, left to N029
+'N035': ['N036', 'N028'], // Row 4: up to N036, left to N028 (no down - passage)
+// Horizontal passage at row 5
+'N034': ['N033', 'N027'], // Row 6: down to N033, left to N027 (no up - passage)
+'N033': ['N034', 'N032', 'N026'], // Row 7: up/down, left to N026
+'N032': ['N033', 'N031', 'N025'], // Row 8: up/down, left to N025
+'N031': ['N032', 'N024'], // Row 9: up to N032, left to N024
       
       // Column 4: Only vertical connections within column, blocked by horizontal passage
       'N039': ['N040'],

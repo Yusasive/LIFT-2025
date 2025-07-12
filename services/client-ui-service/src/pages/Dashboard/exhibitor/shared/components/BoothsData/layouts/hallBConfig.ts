@@ -254,8 +254,8 @@ export const hallBConfig: LayoutConfig = {
       'N084': ['N083', 'N085'],
       'N085': ['N084', 'N086'],
       'N086': ['N085', 'N087'],
-      'N087': ['N086'], // Blocked by horizontal passage
-      'N088': ['N089'],
+      'N087': ['N086', 'N088'], // Connects backward to N088
+      'N088': ['N087', 'N089'], // Connects both ways despite being at passage row
       'N089': ['N088', 'N090'],
       'N090': ['N089', 'N091'],
       'N091': ['N090', 'N092'],

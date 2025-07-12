@@ -12,21 +12,21 @@ interface TimeLeft {
 
 const slides = [
     {
-      image: "/images/background3.png",
+      image: "/images/background4.jpg",
       title: "Celebrate",
       highlight: "Life's Special",
       subtitle: "Moments",
       description: "Showcase, Connect, and Discover – A hub of innovation across industries.",
     },
     {
-      image: "/images/background1.png",
+      image: "/images/background1.jpg",
       title: "Empower",
       highlight: "Business Leaders",
       subtitle: "In Africa",
       description: "Network with pioneers and unlock the future of trade and industry.",
     },
     {
-      image: "/images/background2.png",
+      image: "/images/background8.jpg",
       title: "Innovate",
       highlight: "With Bold Ideas",
       subtitle: "That Shape Tomorrow",

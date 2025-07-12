@@ -31,7 +31,7 @@ if [ "$ENVIRONMENT" = "aws" ]; then
         SSM_PAYLOAD="{\"Name\":\"$PARAM_NAME\",\"Value\":\"$BASE_URL\",\"Type\":\"String\",\"Overwrite\":true}"
         
         aws ssm put-parameter --cli-input-json "$SSM_PAYLOAD" --overwrite
-        echo "✅ Updated payment service URL in SSM Parameter Store: $BASE_URL"
+        echo "✅ Updated booth service URL in SSM Parameter Store: $BASE_URL"
 
     else
         echo "⚠️ Warning: Could not extract base URL from deployment output"

@@ -1,6 +1,1352 @@
 
 import { BoothData } from '../../types/booth.types';
 export const fdaSectorBooths: { [key: string]: BoothData } = {
+
+    "FDA101": {
+    "coords": [[100, 1100], [200, 1100], [200, 1200], [100, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA101"
+  },
+  "FDA102": {
+    "coords": [[200, 1100], [300, 1100], [300, 1200], [200, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA102"
+  },
+  "FDA103": {
+    "coords": [[100, 1200], [200, 1200], [200, 1300], [100, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA103"
+  },
+  "FDA104": {
+    "coords": [[200, 1200], [300, 1200], [300, 1300], [200, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA104"
+  },
+  "FDA105": {
+    "coords": [[100, 1300], [200, 1300], [200, 1400], [100, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA105"
+  },
+  "FDA106": {
+    "coords": [[200, 1300], [300, 1300], [300, 1400], [200, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA106"
+  },
+  "FDA107": {
+    "coords": [[100, 1400], [200, 1400], [200, 1500], [100, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA107"
+  },
+  "FDA108": {
+    "coords": [[200, 1400], [300, 1400], [300, 1500], [200, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA108"
+  },
+
+  // Group 2: FDA210-217 (8 booths)
+  "FDA210": {
+    "coords": [[400, 1100], [500, 1100], [500, 1200], [400, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA210"
+  },
+  "FDA211": {
+    "coords": [[500, 1100], [600, 1100], [600, 1200], [500, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA211"
+  },
+  "FDA212": {
+    "coords": [[400, 1200], [500, 1200], [500, 1300], [400, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA212"
+  },
+  "FDA213": {
+    "coords": [[500, 1200], [600, 1200], [600, 1300], [500, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA213"
+  },
+  "FDA214": {
+    "coords": [[400, 1300], [500, 1300], [500, 1400], [400, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA214"
+  },
+  "FDA215": {
+    "coords": [[500, 1300], [600, 1300], [600, 1400], [500, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA215"
+  },
+  "FDA216": {
+    "coords": [[400, 1400], [500, 1400], [500, 1500], [400, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA216"
+  },
+  "FDA217": {
+    "coords": [[500, 1400], [600, 1400], [600, 1500], [500, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA217"
+  },
+
+  // Group 3: FDA319-326 (8 booths)
+  "FDA319": {
+    "coords": [[700, 1100], [800, 1100], [800, 1200], [700, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA319"
+  },
+  "FDA320": {
+    "coords": [[800, 1100], [900, 1100], [900, 1200], [800, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA320"
+  },
+  "FDA321": {
+    "coords": [[700, 1200], [800, 1200], [800, 1300], [700, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA321"
+  },
+  "FDA322": {
+    "coords": [[800, 1200], [900, 1200], [900, 1300], [800, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA322"
+  },
+  "FDA323": {
+    "coords": [[700, 1300], [800, 1300], [800, 1400], [700, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA323"
+  },
+  "FDA324": {
+    "coords": [[800, 1300], [900, 1300], [900, 1400], [800, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA324"
+  },
+  "FDA325": {
+    "coords": [[700, 1400], [800, 1400], [800, 1500], [700, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA325"
+  },
+  "FDA326": {
+    "coords": [[800, 1400], [900, 1400], [900, 1500], [800, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA326"
+  },
+
+  // Group 4: FDA419-438 (20 booths - 8 upper double, 12 lower single)
+  // Upper section (double column)
+  "FDA419": {
+    "coords": [[1000, 1100], [1100, 1100], [1100, 1200], [1000, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA419"
+  },
+  "FDA420": {
+    "coords": [[1100, 1100], [1200, 1100], [1200, 1200], [1100, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA420"
+  },
+  "FDA421": {
+    "coords": [[1000, 1200], [1100, 1200], [1100, 1300], [1000, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA421"
+  },
+  "FDA422": {
+    "coords": [[1100, 1200], [1200, 1200], [1200, 1300], [1100, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA422"
+  },
+  "FDA423": {
+    "coords": [[1000, 1300], [1100, 1300], [1100, 1400], [1000, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA423"
+  },
+  "FDA424": {
+    "coords": [[1100, 1300], [1200, 1300], [1200, 1400], [1100, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA424"
+  },
+  "FDA425": {
+    "coords": [[1000, 1400], [1100, 1400], [1100, 1500], [1000, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA425"
+  },
+  "FDA426": {
+    "coords": [[1100, 1400], [1200, 1400], [1200, 1500], [1100, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA426"
+  },
+  // Lower section (single column)
+  "FDA427": {
+    "coords": [[1100, 1700], [1200, 1700], [1200, 1800], [1100, 1800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA427"
+  },
+  "FDA428": {
+    "coords": [[1100, 1800], [1200, 1800], [1200, 1900], [1100, 1900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA428"
+  },
+  "FDA429": {
+    "coords": [[1100, 1900], [1200, 1900], [1200, 2000], [1100, 2000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA429"
+  },
+  "FDA430": {
+    "coords": [[1100, 2000], [1200, 2000], [1200, 2100], [1100, 2100]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA430"
+  },
+  "FDA431": {
+    "coords": [[1100, 2100], [1200, 2100], [1200, 2200], [1100, 2200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA431"
+  },
+  "FDA432": {
+    "coords": [[1100, 2200], [1200, 2200], [1200, 2300], [1100, 2300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA432"
+  },
+  "FDA433": {
+    "coords": [[1100, 2300], [1200, 2300], [1200, 2400], [1100, 2400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA433"
+  },
+  "FDA434": {
+    "coords": [[1100, 2400], [1200, 2400], [1200, 2500], [1100, 2500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA434"
+  },
+  "FDA435": {
+    "coords": [[1100, 2500], [1200, 2500], [1200, 2600], [1100, 2600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA435"
+  },
+  "FDA436": {
+    "coords": [[1100, 2600], [1200, 2600], [1200, 2700], [1100, 2700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA436"
+  },
+  "FDA437": {
+    "coords": [[1100, 2700], [1200, 2700], [1200, 2800], [1100, 2800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA437"
+  },
+  "FDA438": {
+    "coords": [[1100, 2800], [1200, 2800], [1200, 2900], [1100, 2900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA438"
+  },
+
+  // Group 5: FDA501-544 (44 booths)
+  // Upper section (18 booths)
+  "FDA501": {
+    "coords": [[1300, 100], [1400, 100], [1400, 200], [1300, 200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA501"
+  },
+  "FDA502": {
+    "coords": [[1400, 100], [1500, 100], [1500, 200], [1400, 200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA502"
+  },
+  "FDA503": {
+    "coords": [[1300, 200], [1400, 200], [1400, 300], [1300, 300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA503"
+  },
+  "FDA504": {
+    "coords": [[1400, 200], [1500, 200], [1500, 300], [1400, 300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA504"
+  },
+  "FDA505": {
+    "coords": [[1300, 300], [1400, 300], [1400, 400], [1300, 400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA505"
+  },
+  "FDA506": {
+    "coords": [[1400, 300], [1500, 300], [1500, 400], [1400, 400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA506"
+  },
+  "FDA507": {
+    "coords": [[1300, 400], [1400, 400], [1400, 500], [1300, 500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA507"
+  },
+  "FDA508": {
+    "coords": [[1400, 400], [1500, 400], [1500, 500], [1400, 500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA508"
+  },
+  "FDA509": {
+    "coords": [[1300, 500], [1400, 500], [1400, 600], [1300, 600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA509"
+  },
+  "FDA510": {
+    "coords": [[1400, 500], [1500, 500], [1500, 600], [1400, 600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA510"
+  },
+  "FDA511": {
+    "coords": [[1300, 600], [1400, 600], [1400, 700], [1300, 700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA511"
+  },
+  "FDA512": {
+    "coords": [[1400, 600], [1500, 600], [1500, 700], [1400, 700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA512"
+  },
+  "FDA513": {
+    "coords": [[1300, 700], [1400, 700], [1400, 800], [1300, 800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA513"
+  },
+  "FDA514": {
+    "coords": [[1400, 700], [1500, 700], [1500, 800], [1400, 800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA514"
+  },
+  "FDA515": {
+    "coords": [[1300, 800], [1400, 800], [1400, 900], [1300, 900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA515"
+  },
+  "FDA516": {
+    "coords": [[1400, 800], [1500, 800], [1500, 900], [1400, 900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA516"
+  },
+  "FDA517": {
+    "coords": [[1300, 900], [1400, 900], [1400, 1000], [1300, 1000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA517"
+  },
+  "FDA518": {
+    "coords": [[1400, 900], [1500, 900], [1500, 1000], [1400, 1000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA518"
+  },
+  // Middle section (8 booths)
+  "FDA519": {
+    "coords": [[1300, 1100], [1400, 1100], [1400, 1200], [1300, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA519"
+  },
+  "FDA520": {
+    "coords": [[1400, 1100], [1500, 1100], [1500, 1200], [1400, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA520"
+  },
+  "FDA521": {
+    "coords": [[1300, 1200], [1400, 1200], [1400, 1300], [1300, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA521"
+  },
+  "FDA522": {
+    "coords": [[1400, 1200], [1500, 1200], [1500, 1300], [1400, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA522"
+  },
+  "FDA523": {
+    "coords": [[1300, 1300], [1400, 1300], [1400, 1400], [1300, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA523"
+  },
+  "FDA524": {
+    "coords": [[1400, 1300], [1500, 1300], [1500, 1400], [1400, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA524"
+  },
+  "FDA525": {
+    "coords": [[1300, 1400], [1400, 1400], [1400, 1500], [1300, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA525"
+  },
+  "FDA526": {
+    "coords": [[1400, 1400], [1500, 1400], [1500, 1500], [1400, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA526"
+  },
+  // Lower section (18 booths)
+  "FDA527": {
+    "coords": [[1300, 1700], [1400, 1700], [1400, 1800], [1300, 1800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA527"
+  },
+  "FDA528": {
+    "coords": [[1400, 1700], [1500, 1700], [1500, 1800], [1400, 1800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA528"
+  },
+  "FDA529": {
+    "coords": [[1300, 1800], [1400, 1800], [1400, 1900], [1300, 1900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA529"
+  },
+  "FDA530": {
+    "coords": [[1400, 1800], [1500, 1800], [1500, 1900], [1400, 1900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA530"
+  },
+  "FDA531": {
+    "coords": [[1300, 1900], [1400, 1900], [1400, 2000], [1300, 2000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA531"
+  },
+  "FDA532": {
+    "coords": [[1400, 1900], [1500, 1900], [1500, 2000], [1400, 2000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA532"
+  },
+  "FDA533": {
+    "coords": [[1300, 2000], [1400, 2000], [1400, 2100], [1300, 2100]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA533"
+  },
+  "FDA534": {
+    "coords": [[1400, 2000], [1500, 2000], [1500, 2100], [1400, 2100]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA534"
+  },
+  "FDA535": {
+    "coords": [[1300, 2100], [1400, 2100], [1400, 2200], [1300, 2200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA535"
+  },
+  "FDA536": {
+    "coords": [[1400, 2100], [1500, 2100], [1500, 2200], [1400, 2200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA536"
+  },
+  "FDA537": {
+    "coords": [[1300, 2200], [1400, 2200], [1400, 2300], [1300, 2300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA537"
+  },
+  "FDA538": {
+    "coords": [[1400, 2200], [1500, 2200], [1500, 2300], [1400, 2300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA538"
+  },
+  "FDA539": {
+    "coords": [[1300, 2300], [1400, 2300], [1400, 2400], [1300, 2400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA539"
+  },
+  "FDA540": {
+    "coords": [[1400, 2300], [1500, 2300], [1500, 2400], [1400, 2400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA540"
+  },
+  "FDA541": {
+    "coords": [[1300, 2400], [1400, 2400], [1400, 2500], [1300, 2500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA541"
+  },
+  "FDA542": {
+    "coords": [[1400, 2400], [1500, 2400], [1500, 2500], [1400, 2500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA542"
+  },
+  "FDA543": {
+    "coords": [[1300, 2500], [1400, 2500], [1400, 2600], [1300, 2600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA543"
+  },
+  "FDA544": {
+    "coords": [[1400, 2500], [1500, 2500], [1500, 2600], [1400, 2600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA544"
+  },
+
+  // Group 6: FDA601-644 (44 booths)
+  // Upper section (12 booths)
+  "FDA601": {
+    "coords": [[1600, 400], [1700, 400], [1700, 500], [1600, 500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA601"
+  },
+  "FDA602": {
+    "coords": [[1700, 400], [1800, 400], [1800, 500], [1700, 500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA602"
+  },
+  "FDA603": {
+    "coords": [[1600, 500], [1700, 500], [1700, 600], [1600, 600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA603"
+  },
+  "FDA604": {
+    "coords": [[1700, 500], [1800, 500], [1800, 600], [1700, 600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA604"
+  },
+  "FDA605": {
+    "coords": [[1600, 600], [1700, 600], [1700, 700], [1600, 700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA605"
+  },
+  "FDA606": {
+    "coords": [[1700, 600], [1800, 600], [1800, 700], [1700, 700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA606"
+  },
+  "FDA607": {
+    "coords": [[1600, 700], [1700, 700], [1700, 800], [1600, 800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA607"
+  },
+  "FDA608": {
+    "coords": [[1700, 700], [1800, 700], [1800, 800], [1700, 800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA608"
+  },
+  "FDA609": {
+    "coords": [[1600, 800], [1700, 800], [1700, 900], [1600, 900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA609"
+  },
+  "FDA610": {
+    "coords": [[1700, 800], [1800, 800], [1800, 900], [1700, 900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA610"
+  },
+  "FDA611": {
+    "coords": [[1600, 900], [1700, 900], [1700, 1000], [1600, 1000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA611"
+  },
+  "FDA612": {
+    "coords": [[1700, 900], [1800, 900], [1800, 1000], [1700, 1000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA612"
+  },
+  // Middle section (8 booths)
+  "FDA613": {
+    "coords": [[1600, 1100], [1700, 1100], [1700, 1200], [1600, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA613"
+  },
+  "FDA614": {
+    "coords": [[1700, 1100], [1800, 1100], [1800, 1200], [1700, 1200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA614"
+  },
+  "FDA615": {
+    "coords": [[1600, 1200], [1700, 1200], [1700, 1300], [1600, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA615"
+  },
+  "FDA616": {
+    "coords": [[1700, 1200], [1800, 1200], [1800, 1300], [1700, 1300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA616"
+  },
+  "FDA617": {
+    "coords": [[1600, 1300], [1700, 1300], [1700, 1400], [1600, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA617"
+  },
+  "FDA618": {
+    "coords": [[1700, 1300], [1800, 1300], [1800, 1400], [1700, 1400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA618"
+  },
+  "FDA619": {
+    "coords": [[1600, 1400], [1700, 1400], [1700, 1500], [1600, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA619"
+  },
+  "FDA620": {
+    "coords": [[1700, 1400], [1800, 1400], [1800, 1500], [1700, 1500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA620"
+  },
+  // Lower section (24 booths)
+  "FDA621": {
+    "coords": [[1600, 1700], [1700, 1700], [1700, 1800], [1600, 1800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA621"
+  },
+  "FDA622": {
+    "coords": [[1700, 1700], [1800, 1700], [1800, 1800], [1700, 1800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA622"
+  },
+  "FDA623": {
+    "coords": [[1600, 1800], [1700, 1800], [1700, 1900], [1600, 1900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA623"
+  },
+  "FDA624": {
+    "coords": [[1700, 1800], [1800, 1800], [1800, 1900], [1700, 1900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA624"
+  },
+  "FDA625": {
+    "coords": [[1600, 1900], [1700, 1900], [1700, 2000], [1600, 2000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA625"
+  },
+  "FDA626": {
+    "coords": [[1700, 1900], [1800, 1900], [1800, 2000], [1700, 2000]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA626"
+  },
+  "FDA627": {
+    "coords": [[1600, 2000], [1700, 2000], [1700, 2100], [1600, 2100]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA627"
+  },
+  "FDA628": {
+    "coords": [[1700, 2000], [1800, 2000], [1800, 2100], [1700, 2100]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA628"
+  },
+  "FDA629": {
+    "coords": [[1600, 2100], [1700, 2100], [1700, 2200], [1600, 2200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA629"
+  },
+  "FDA630": {
+    "coords": [[1700, 2100], [1800, 2100], [1800, 2200], [1700, 2200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA630"
+  },
+  "FDA631": {
+    "coords": [[1600, 2200], [1700, 2200], [1700, 2300], [1600, 2300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA631"
+  },
+  "FDA632": {
+    "coords": [[1700, 2200], [1800, 2200], [1800, 2300], [1700, 2300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA632"
+  },
+  "FDA633": {
+    "coords": [[1600, 2300], [1700, 2300], [1700, 2400], [1600, 2400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA633"
+  },
+  "FDA634": {
+    "coords": [[1700, 2300], [1800, 2300], [1800, 2400], [1700, 2400]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA634"
+  },
+  "FDA635": {
+    "coords": [[1600, 2400], [1700, 2400], [1700, 2500], [1600, 2500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA635"
+  },
+  "FDA636": {
+    "coords": [[1700, 2400], [1800, 2400], [1800, 2500], [1700, 2500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA636"
+  },
+  "FDA637": {
+    "coords": [[1600, 2500], [1700, 2500], [1700, 2600], [1600, 2600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA637"
+  },
+  "FDA638": {
+    "coords": [[1700, 2500], [1800, 2500], [1800, 2600], [1700, 2600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA638"
+  },
+  "FDA639": {
+    "coords": [[1600, 2600], [1700, 2600], [1700, 2700], [1600, 2700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA639"
+  },
+  "FDA640": {
+    "coords": [[1700, 2600], [1800, 2600], [1800, 2700], [1700, 2700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA640"
+  },
+  "FDA641": {
+    "coords": [[1600, 2700], [1700, 2700], [1700, 2800], [1600, 2800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA641"
+  },
+  "FDA642": {
+    "coords": [[1700, 2700], [1800, 2700], [1800, 2800], [1700, 2800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA642"
+  },
+  "FDA643": {
+    "coords": [[1600, 2800], [1700, 2800], [1700, 2900], [1600, 2900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA643"
+  },
+  "FDA644": {
+    "coords": [[1700, 2800], [1800, 2800], [1800, 2900], [1700, 2900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA644"
+  },
+
+  // Group 7: FDA701-750 (50 booths)
+  // Upper section (4 booths)
+  "FDA701": {
+    "coords": [[2100, 100], [2200, 100], [2200, 200], [2100, 200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA701"
+  },
+  "FDA702": {
+    "coords": [[2200, 100], [2300, 100], [2300, 200], [2200, 200]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA702"
+  },
+  "FDA703": {
+    "coords": [[2100, 200], [2200, 200], [2200, 300], [2100, 300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA703"
+  },
+  "FDA704": {
+    "coords": [[2200, 200], [2300, 200], [2300, 300], [2200, 300]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA704"
+  },
+  // Middle section 1 (10 booths)
+  "FDA705": {
+    "coords": [[2100, 400], [2200, 400], [2200, 500], [2100, 500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA705"
+  },
+  "FDA706": {
+    "coords": [[2200, 400], [2300, 400], [2300, 500], [2200, 500]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA706"
+  },
+  "FDA707": {
+    "coords": [[2100, 500], [2200, 500], [2200, 600], [2100, 600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA707"
+  },
+  "FDA708": {
+    "coords": [[2200, 500], [2300, 500], [2300, 600], [2200, 600]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA708"
+  },
+  "FDA709": {
+    "coords": [[2100, 600], [2200, 600], [2200, 700], [2100, 700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA709"
+  },
+  "FDA710": {
+    "coords": [[2200, 600], [2300, 600], [2300, 700], [2200, 700]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA710"
+  },
+  "FDA711": {
+    "coords": [[2100, 700], [2200, 700], [2200, 800], [2100, 800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA711"
+  },
+  "FDA712": {
+    "coords": [[2200, 700], [2300, 700], [2300, 800], [2200, 800]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA712"
+  },
+  "FDA713": {
+    "coords": [[2100, 800], [2200, 800], [2200, 900], [2100, 900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA713"
+  },
+  "FDA714": {
+    "coords": [[2200, 800], [2300, 800], [2300, 900], [2200, 900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA714"
+  },
+  "FDA715": {
+    "coords": [[2200, 800], [2300, 800], [2300, 900], [2200, 900]],
+    "status": "available",
+    "size": "3m x 3m",
+    "category": "Standard",
+    "price": 36680,
+    "sqm": 9,
+    "boothId": "FDA715"
+  },
  "FDA716": {
       "coords": [
         [
@@ -1939,3 +3285,4 @@ export const fdaSectorBooths: { [key: string]: BoothData } = {
     }
   // ... more FDA booths
 };
+

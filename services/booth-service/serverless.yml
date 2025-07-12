@@ -4,6 +4,7 @@ frameworkVersion: '4'
 
 provider:
   name: aws
+  timeout: 30
   runtime: nodejs18.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
@@ -41,8 +42,11 @@ plugins:
 
 functions:
   # Booth Service
+
   booth:
+  
     handler: app/handlers/boothHandler.handler
+    timeout: 30
     events:
       - httpApi:
           path: /booth/reserve
@@ -57,11 +61,26 @@ functions:
           path: /booth/reservations/{id}
           method: delete
       - httpApi:
+          path: /booth/reservations
+          method: patch
+      - httpApi:
           path: /booth/stats
           method: get
       - httpApi:
           path: /users/{id}
           method: delete
+      - httpApi:
+          path: /booth/all
+          method: get
+      - httpApi:
+          path: /booth/sector
+          method: get
+
+  # Cron job for cleaning up expired booth bookings
+  boothCleanupCron:
+    handler: app/handlers/boothCleanupHandler.handler
+    events:
+      - schedule: cron(0 0 * * ? *)  # Run every day at midnight UTC
 
 custom:
   serverless-offline:

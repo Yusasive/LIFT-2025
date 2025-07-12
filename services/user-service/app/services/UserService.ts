@@ -179,6 +179,10 @@ export class UserService {
       if (requestedUserType === UserType.Exhibitor && !input.company && payload.company == IsNull) {
         return ErrorResponse(400, "Company name is required for exhibitor accounts.");
       }
+
+      if (requestedUserType === UserType.Exhibitor &&input.booth_preference && input.booth_type) {
+        return ErrorResponse(400, "Booth preference and booth type are required for exhibitor accounts.");
+      }
       
       const data = await this.userRepository.findAccount(input.email, requestedUserType);
 
@@ -191,6 +195,8 @@ export class UserService {
           email: input.email,
           phone: input.phone,
           company: input.company,
+          booth_preference: input.booth_preference,
+          booth_type: input.booth_type,
           address: {
             address_line1: input.address,
             address_line2: input.address_line2 || '',
@@ -202,6 +208,7 @@ export class UserService {
           },
         }
       );
+
       const response : UserResponse = {
         _id: user.user_id,
         email: user.email,
@@ -229,6 +236,9 @@ export class UserService {
         const exhibitor = user as Exhibitor;
         response.company = exhibitor.company;
         response.status = exhibitor.status;
+        response.local = exhibitor.local;
+        response.boothPreference = exhibitor.booth_preference;
+        response.boothType = exhibitor.booth_type;
       }
 
       return SuccessResponse(response);
@@ -644,7 +654,17 @@ export class UserService {
         lastName: user.last_name,
         phone: user.phone,
         userType: user.user_type,
+        address: user.address,
       };
+
+      // Add exhibitor-specific fields if user is an exhibitor
+      if (user.user_type === UserType.Exhibitor) {
+        const exhibitor = user as Exhibitor;
+        response.company = exhibitor.company;
+        response.local = exhibitor.local;
+        response.boothPreference = exhibitor.booth_preference;
+        response.boothType = exhibitor.booth_type;
+      }
 
       // Set cookie in response
       if (tokenResponse.data.cookie) {

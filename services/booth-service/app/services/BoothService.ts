@@ -5,7 +5,7 @@ import { autoInjectable, inject } from "tsyringe";
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
 import { BoothReservationInput } from "../models/dto/BoothReservationInput";
-import { AuthServiceClient } from "../clients/authServiceClient";
+
 import { 
     BoothTransactionResponse, 
     ReservedBoothsResponse,
@@ -131,6 +131,8 @@ export class BoothService {
                 reservationDate: reservation.reservation_date.toISOString(),
                 expirationDate: reservation.expiration_date.toISOString(),
                 validityStatus: reservation.validity_status,
+                createdAt: reservation.created_at.toISOString(),
+                updatedAt: reservation.updated_at.toISOString(),
                 totalAmount: reservation.booth_items.reduce((sum, item) => sum + parseFloat(item.booth_price.toString()), 0),
                 boothCount: reservation.booth_items.length,
                 booths: reservation.booth_items.map(item => ({
@@ -298,6 +300,60 @@ export class BoothService {
         }
     }
 
+    async GetBooths(event: APIGatewayProxyEventV2) {
+        try {
+            const payload = event.requestContext.authorizer?.jwt?.claims;
+            if (!payload) return ErrorResponse(403, "authentication failed!");
+
+            const booths = await this.boothRepository.getAllBooths();
+
+            return SuccessResponse({
+                success: true,
+                data: booths
+            });
+        } catch (error) {
+            console.log(error);
+            return ErrorResponse(500, error);
+        }
+    }
+
+    async GetBoothsBySector(event: APIGatewayProxyEventV2) {
+        try {
+            const payload = event.requestContext.authorizer?.jwt?.claims;
+            if (!payload) return ErrorResponse(403, "authentication failed!");
+
+            const sector = event.queryStringParameters?.sector;
+            if (!sector) return ErrorResponse(400, "Sector is required");
+            
+            const booths = await this.boothRepository.getBoothsBySector(sector);
+
+            return SuccessResponse({
+                success: true,
+                data: booths
+            });
+        } catch (error) {
+            console.log(error);
+            return ErrorResponse(500, error);
+        }
+    }
+
+    async GetBoothSectors(event: APIGatewayProxyEventV2) {
+        try {
+            const payload = event.requestContext.authorizer?.jwt?.claims;
+            if (!payload) return ErrorResponse(403, "authentication failed!");
+
+            const boothTypes = await this.boothRepository.getAllBoothTypes();
+
+            return SuccessResponse({
+                success: true,
+                data: boothTypes
+            });
+        } catch (error) {
+            console.log(error);
+            return ErrorResponse(500, error);
+        }
+    }
+
     private validatePricing(booths: any[]): {
         isValid: boolean;
         totalAmount: number;
@@ -326,4 +382,39 @@ export class BoothService {
             errors
         };
     }
+  async  updatePaymentStatus(event: APIGatewayProxyEventV2) {
+        try {
+            const payload = event.requestContext.authorizer?.jwt?.claims;
+            if (!payload) return ErrorResponse(403, "authentication failed!");
+
+            // Check permission
+            // const permissionResult = await AuthServiceClient.checkPermission(
+            //     'update:booth_payment_status',
+            //     'user-service',
+            //     payload
+            // );
+
+            // if (!permissionResult.success) {
+            //     return ErrorResponse(401, "You are not authorized to update payment status!");
+            // }
+
+            const body = typeof event.body === 'string' ? JSON.parse(event.body || '{}') : event.body;
+            const { transactionId, status } = body;
+
+            if (!transactionId || !status) {
+                return ErrorResponse(400, "Transaction ID and status are required");
+            }
+
+            const updatedStatus = await this.boothRepository.updateBoothsStatus(transactionId, status);
+
+            return SuccessResponse({
+                success: true,
+                data: updatedStatus
+            });
+        } catch (error) {
+            console.log(error);
+            return ErrorResponse(500, error);
+        }   
+    }
+
 }

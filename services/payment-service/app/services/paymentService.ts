@@ -64,13 +64,39 @@ export class PaymentService {
             console.log("Paystack payment response", response.data);
             console.log("input", input);
 
-            const updateInput = new UpdatePaymentInput();
-            updateInput.transaction_id = input.transaction_id;
-            updateInput.email = input.email;
-            updateInput.reference = response.data.data.reference;
-            updateInput.payStackstatus = response.data.data.status as PaymentStatus;
-            const payment = await this.paymentRepository.updatePaymentStatus(updateInput);
-
+            // Try to find existing payment first
+            let payment;
+            try {
+                const updateInput = new UpdatePaymentInput();
+                updateInput.transaction_id = input.transaction_id;
+                updateInput.email = input.email;
+                updateInput.reference = response.data.data.reference;
+                updateInput.payStackstatus = response.data.data.status as PaymentStatus;
+                payment = await this.paymentRepository.updatePaymentStatus(updateInput);
+            } catch (error) {
+                // If payment not found, create a new one
+                if (error instanceof Error && error.message === "Payment not found!") {
+                    console.log("Payment not found, creating new payment record");
+                    const createInput = {
+                        amount: input.amount,
+                        currency: input.currency,
+                        user_id: input.user_id,
+                        transaction_id: input.transaction_id,
+                        transactionStatus: response.data.data.status as PaymentStatus
+                    };
+                    payment = await this.paymentRepository.createPayment(createInput);
+                    
+                    // Update the newly created payment with Paystack details
+                    const updateInput = new UpdatePaymentInput();
+                    updateInput.transaction_id = input.transaction_id;
+                    updateInput.email = input.email;
+                    updateInput.reference = response.data.data.reference;
+                    updateInput.payStackstatus = response.data.data.status as PaymentStatus;
+                    payment = await this.paymentRepository.updatePaymentStatus(updateInput);
+                } else {
+                    throw error;
+                }
+            }
 
             return {
                 payment,

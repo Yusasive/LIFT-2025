@@ -19,15 +19,22 @@ export class PaymentRepository {
     }
 
     async createPayment(input: CreatePaymentInput): Promise<Payment> {
+        console.log("Creating payment with input:", JSON.stringify(input));
         await this.initializeRepositories();
+        console.log("Payment payload before:", JSON.stringify(input));
         const payment = this.paymentRepository.create({
-            amount: input.amount,
+            amount: Number(input.amount),
             currency: input.currency,
             user_id: input.user_id,
             transactionId: input.transaction_id,
             transactionStatus: input.transactionStatus
         });
+        console.log("Payment model:", JSON.stringify(payment));
+         console.log("Payment payload after:", JSON.stringify(input));
+        const paymentCreated = await this.paymentRepository.save(payment);  
+        
         return await this.paymentRepository.save(payment);
+
     }
 
     async updatePaymentStatus(input: UpdatePaymentInput): Promise<Payment> {

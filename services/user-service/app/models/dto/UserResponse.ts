@@ -26,8 +26,8 @@ export interface UserResponse {
     // Exhibitor-specific
     company?: string;
     local?: string;
-  
-    // Staff-specific
+    boothPreference?: string;
+    boothType?: string;
     staffId?: string;
     ticketNumber?: string;
     qrCode?: string;

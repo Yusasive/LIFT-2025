@@ -26,7 +26,7 @@ import {
 import { INDOOR_PRICING, OUTDOOR_PRICING, PREMIUM_OUTDOOR_PRICING } from './components/BoothsData/pricingConfig';
 import {Z_INDEX} from '../../../../utils/zIndexManager';
 import { calculatePackagePrice } from '../../../../utils/priceCalculations';
-import { CommunicationController } from '@/controllers/CommunicationController';
+import { sendInvoiceEmail } from '../../../../utils/invoiceEmailService';
 
 interface PersonalInfo {
   firstName?: string;
@@ -199,7 +199,7 @@ const TwoStepBoothReservation: React.FC<TwoStepBoothReservationProps> = ({
   
   // Payment form state
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
-    paymentMethod: '',
+    paymentMethod: 'card',
     cardNumber: '',
     cardName: '',
     expiryDate: '',
@@ -226,8 +226,9 @@ const TwoStepBoothReservation: React.FC<TwoStepBoothReservationProps> = ({
       // setPaymentSuccess(false);
       setRemark('');
       setValidated(false);
+      setEmailSent(false);
       setPaymentInfo({
-        paymentMethod: '',
+        paymentMethod: 'card',
         cardNumber: '',
         cardName: '',
         expiryDate: '',
@@ -241,6 +242,36 @@ const TwoStepBoothReservation: React.FC<TwoStepBoothReservationProps> = ({
       });
     }
   }, [show, user]);
+
+  // Send invoice email when payment dialog opens (step 2)
+  const [emailSent, setEmailSent] = useState<boolean>(false);
+  
+  useEffect(() => {
+    if (currentStep === 2 && reservationSuccess && user?.email && !emailSent) {
+      const sendInvoiceEmailAsync = async () => {
+        try {
+          const invoiceData = generateInvoiceData();
+          await sendInvoiceEmail(invoiceData, user.email, {
+            logo: "/images/litf_logo.png"
+          });
+          
+          setEmailSent(true);
+          setToastType('success');
+          setToastMessage('Invoice has been sent to your email address.');
+          setShowToast(true);
+        } catch (error) {
+          console.error('Failed to send invoice email:', error);
+          setToastType('warning');
+          setToastMessage('Invoice email could not be sent, but you can still view it here.');
+          setShowToast(true);
+        }
+      };
+      
+      sendInvoiceEmailAsync();
+    } else {
+      console.log("Unable to send invoice email")
+    }
+  }, [currentStep, reservationSuccess, user?.email, emailSent]);
   
   // Calculate total price based on selected booths
  const calculateSubtotal = (): number => {
@@ -258,14 +289,14 @@ const TwoStepBoothReservation: React.FC<TwoStepBoothReservationProps> = ({
   };
   
   // Calculate tax
-  const calculateTax = (): number => {
-    if (!taxConfig?.enabled) return 0;
-    const taxRate = taxConfig.rate || 7.5;
-    return calculateSubtotal() * (taxRate / 100);
-  };
+  // const calculateTax = (): number => {
+  //   if (!taxConfig?.enabled) return 0;
+  //   const taxRate = taxConfig.rate || 7.5;
+  //   return calculateSubtotal() * (taxRate / 100);
+  // };
   
   // Calculate total
-  const calculateTotal = (): number => calculateSubtotal() + calculateTax();
+  const calculateTotal = (): number => calculateSubtotal();
   
   // Get booth size label
   // const getBoothSizeLabel = (size: string): string => {
@@ -342,10 +373,6 @@ const TwoStepBoothReservation: React.FC<TwoStepBoothReservationProps> = ({
     const invoiceNumber = generateInvoiceNumber();
     const date = formatInvoiceDate();
     const dueDate = calculateDueDate();
-
-    console.log("Booth Breakdown", boothBreakdown)
-    console.log("Profile data:", profile)
-    console.log("User data:", user)
     
     // Prepare invoice items from booth breakdown
     let items: any[] = [];
@@ -407,18 +434,6 @@ const TwoStepBoothReservation: React.FC<TwoStepBoothReservationProps> = ({
     const customerPostalCode = profile?.address?.postalCode || profile?.postalCode || '';
     const customerCountry = profile?.address?.country || profile?.country || '';
 
-    console.log("Customer Info:", {
-      name: customerName,
-      company: customerCompany,
-      email: customerEmail,
-      phone: customerPhone,
-      address: customerAddress,
-      city: customerCity,
-      state: customerState,
-      postalCode: customerPostalCode,
-      country: customerCountry
-    });
-
     // Calculate subtotal from items
     const subtotal = items.reduce((sum, item) => sum + (item.total || 0), 0);
     
@@ -426,7 +441,7 @@ const TwoStepBoothReservation: React.FC<TwoStepBoothReservationProps> = ({
     const tax = taxConfig?.enabled ? subtotal * ((taxConfig.rate || 7.5) / 100) : 0;
     
     // Calculate total
-    const total = subtotal + tax;
+    const total = subtotal;
 
     console.log("Invoice Calculations:", {
       itemsCount: items.length,
@@ -458,7 +473,8 @@ const TwoStepBoothReservation: React.FC<TwoStepBoothReservationProps> = ({
       currency: 'NGN',
       paymentMethod: paymentInfo.paymentMethod === 'card' ? 'Credit Card' : 
                      paymentInfo.paymentMethod === 'bank' ? 'Bank Transfer' : 'Cash Payment',
-      reservationIds: reservationIds
+      reservationIds: reservationIds,
+      boothBreakdown: boothBreakdown || []
     };
   };
 
@@ -828,7 +844,7 @@ const renderReservationForm = () => (
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="font-medium">Sectors:</span>
-                <span>{[...new Set(selectedBooths.map(id => id.split('-')[0]))].join(', ')}</span>
+                <span>{[...new Set(boothBreakdown?.map(item => item.locationName))]}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">Validity Period:</span>
@@ -1109,10 +1125,9 @@ const renderReservationForm = () => (
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  <option value="">-- Select Payment Method --</option>
                   <option value="card">Pay by Card</option>
                   {/* <option value="bank">Bank Transfer</option> */}
-                  <option value="cash">Cash Payment (In Office)</option>
+                  {/* <option value="cash">Cheque Payment (In Office)</option> */}
                 </select>
                 {validated && !paymentInfo.paymentMethod && (
                   <p className="mt-1 text-sm text-red-600">Please select a payment method.</p>

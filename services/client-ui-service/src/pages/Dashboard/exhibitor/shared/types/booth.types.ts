@@ -37,6 +37,8 @@ export interface BoothData {
   price: number;
   sqm: number;
   boothId: string;
+  gridPosition?:{}
+  bookedBy?: string; // User ID of the person who booked it
 }
 
 // Enhanced booth data with layout information

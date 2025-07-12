@@ -1,0 +1,224 @@
+service: infra
+
+# plugins:
+#   - serverless-finch
+#   - serverless-cloudfront-invalidate
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  environment:
+    DB_USER: ${ssm:/litf-${opt:stage, 'dev'}/db-user}
+    DB_PASSWORD: ${ssm:/litf-${opt:stage, 'dev'}/db-pass}
+    API_DOMAIN_NAME: ${ssm:/litf-${opt:stage, 'dev'}/base-domain}
+    API_DOMAIN_CERTIFICATE_ARN: ${ssm:/litf-${opt:stage, 'dev'}/api-acm-certificate-arn}
+
+resources:
+  Parameters:
+    VpcCidr:
+      Type: String
+      Default: 10.0.0.0/16
+    PublicSubnet1Cidr:
+      Type: String
+      Default: 10.0.1.0/24
+    PublicSubnet2Cidr:
+      Type: String
+      Default: 10.0.2.0/24
+    DBUsername:
+      Type: String
+      Default: ${self:provider.environment.DB_USER}
+      NoEcho: true
+    DBPassword:
+      Type: String
+      NoEcho: true
+      MinLength: 8
+      Default: ${self:provider.environment.DB_PASSWORD}
+    Environment: 
+      Type: String 
+      Default: ${self:provider.stage}
+
+  Resources:
+  ###### Database Resources ######
+    VPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: !Ref VpcCidr
+        EnableDnsHostnames: true
+        EnableDnsSupport: true
+        Tags:
+        - Key: Name
+          Value: !Sub ${Environment}-Litf-Aurora-Vpc
+
+    InternetGateway:
+      Type: AWS::EC2::InternetGateway
+      Properties:
+        Tags:
+        - Key: Name
+          Value: !Sub ${Environment}-Litf-Internetateway
+
+    AttachGateway:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId: !Ref VPC
+        InternetGatewayId: !Ref InternetGateway
+
+    PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: !Ref PublicSubnet1Cidr
+        AvailabilityZone: !Select [ 0, !GetAZs '' ]
+        MapPublicIpOnLaunch: true
+        Tags:
+        - Key: Name
+          Value: !Sub ${Environment}-Litf-Public-Subnet-1
+
+    PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: !Ref PublicSubnet2Cidr
+        AvailabilityZone: !Select [ 1, !GetAZs '' ]
+        MapPublicIpOnLaunch: true
+        Tags:
+        - Key: Name
+          Value: !Sub ${Environment}-Litf-Public-Subnet-2
+
+    PublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref VPC
+
+    PublicRoute:
+      Type: AWS::EC2::Route
+      DependsOn: AttachGateway
+      Properties:
+        RouteTableId: !Ref PublicRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        GatewayId: !Ref InternetGateway
+
+    PublicSubnet1RouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref PublicSubnet1
+        RouteTableId: !Ref PublicRouteTable
+
+    PublicSubnet2RouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref PublicSubnet2
+        RouteTableId: !Ref PublicRouteTable
+
+    DBSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupName: Aurora-Subnet-Group
+        DBSubnetGroupDescription: LITF Aurora DB Subnet Group
+        SubnetIds:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+        Tags:
+        - Key: Name
+          Value: !Sub ${Environment}-Litf-DB-Security-Group
+
+    DBSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Enable access to Aurora Serverless PostgreSQL
+        VpcId: !Ref VPC
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+        Tags:
+        - Key: Name
+          Value: !Sub ${Environment}-Litf-Aurora-Security-Group
+
+    AuroraDBCluster:
+      Type: AWS::RDS::DBCluster
+      Properties:
+        Engine: aurora-postgresql
+        EngineMode: provisioned
+        DBClusterIdentifier: !Sub ${Environment}-aurora-postgres-cluster
+        MasterUsername: !Ref DBUsername
+        MasterUserPassword: !Ref DBPassword
+        DBSubnetGroupName: !Ref DBSubnetGroup
+        VpcSecurityGroupIds:
+        - !Ref DBSecurityGroup
+        EngineVersion: "15.4"
+        StorageEncrypted: true
+        ServerlessV2ScalingConfiguration:
+          MinCapacity: 0.5
+          MaxCapacity: 2
+        EnableHttpEndpoint: true
+        DeletionProtection: false
+
+    AuroraDBInstance1:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBClusterIdentifier: !Ref AuroraDBCluster
+        DBInstanceClass: db.serverless
+        Engine: aurora-postgresql
+        PubliclyAccessible: true
+
+  ###### HTTP API Custom Domain Resources ######
+    APIDomainName:
+      Type: AWS::ApiGatewayV2::DomainName
+      Properties:
+        DomainName: ${self:provider.environment.API_DOMAIN_NAME}
+        DomainNameConfigurations:
+          - CertificateArn: ${self:provider.environment.API_DOMAIN_CERTIFICATE_ARN}
+            EndpointType: REGIONAL
+            SecurityPolicy: TLS_1_2
+
+    # AuthAPIMapping:
+    #   Type: AWS::ApiGatewayV2::ApiMapping
+    #   Properties:
+    #     ApiId: !Ref APIDomainName
+    #     DomainName: ${self:provider.environment.API_DOMAIN_NAME}
+    #     Stage: '$default'
+    #     ApiMappingKey: auth
+
+    # BoothAPIMapping:
+    #   Type: AWS::ApiGatewayV2::ApiMapping
+    #   Properties:
+    #     ApiId: !Ref APIDomainName
+    #     DomainName: ${self:provider.environment.API_DOMAIN_NAME}
+    #     Stage: '$default'
+    #     ApiMappingKey: booth
+
+    # CommunicationAPIMapping:
+    #   Type: AWS::ApiGatewayV2::ApiMapping
+    #   Properties:
+    #     ApiId: !Ref APIDomainName
+    #     DomainName: ${self:provider.environment.API_DOMAIN_NAME}
+    #     Stage: '$default'
+    #     ApiMappingKey: comm
+
+    # PaymentAPIMapping:
+    #   Type: AWS::ApiGatewayV2::ApiMapping
+    #   Properties:
+    #     ApiId: !Ref APIDomainName
+    #     DomainName: ${self:provider.environment.API_DOMAIN_NAME}
+    #     Stage: '$default'
+    #     ApiMappingKey: payment
+
+    # UserAPIMapping:
+    #   Type: AWS::ApiGatewayV2::ApiMapping
+    #   Properties:
+    #     ApiId: !Ref APIDomainName
+    #     DomainName: ${self:provider.environment.API_DOMAIN_NAME}
+    #     Stage: '$default'
+    #     ApiMappingKey: user
+
+  Outputs:
+    ClusterEndpoint:
+      Description: The endpoint address of the Aurora DB cluster
+      Value: !GetAtt AuroraDBCluster.Endpoint.Address
+
+    VPCId:
+      Value: !Ref VPC
+      Description: Created VPC ID

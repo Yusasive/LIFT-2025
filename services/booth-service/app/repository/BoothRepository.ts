@@ -1,15 +1,19 @@
-import { Repository, DataSource, QueryRunner } from "typeorm";
+import { Repository, DataSource } from "typeorm";
 import { BoothTransaction } from "../models/entity/BoothTransaction.entity";
 import { BoothItem } from "../models/entity/BoothItem.entity";
 import { BoothItemInput } from "../models/dto/BoothItemInput";
 import { injectable, inject } from "tsyringe";
 import { PaymentServiceClient } from "../clients/paymentServiceClient";
 import { Currency } from "../models/dto/CreatePaymentInput";
+import { BoothData } from "../models/entity/BoothData.entity";
+import { BoothType } from "../models/entity/BoothType.entity";
 
 @injectable()
 export class BoothRepository {
     private boothTransactionRepository: Repository<BoothTransaction>;
     private boothItemRepository: Repository<BoothItem>;
+    private boothDataRepository: Repository<BoothData>;
+    private boothTypeRepository: Repository<BoothType>;
 
     constructor(@inject("DataSource") private dataSource: DataSource) {}
 
@@ -19,6 +23,8 @@ export class BoothRepository {
         }
         this.boothTransactionRepository = this.dataSource.getRepository(BoothTransaction);
         this.boothItemRepository = this.dataSource.getRepository(BoothItem);
+        this.boothDataRepository = this.dataSource.getRepository(BoothData);
+        this.boothTypeRepository = this.dataSource.getRepository(BoothType);
     }
 
     async checkBoothAvailability(booths: BoothItemInput[]): Promise<{
@@ -94,7 +100,7 @@ export class BoothRepository {
 
             // Create booth items
             const boothItems: BoothItem[] = [];
-            const totalAmount = booths.reduce((acc, booth) => acc + booth.boothPrice, 0);
+            const totalAmount = booths.reduce((acc, booth) => acc + Number(booth.boothPrice), 0);
             for (const boothInput of booths) {
                 const boothItem = new BoothItem();
                 boothItem.booth_transaction_id = savedTransaction.id;
@@ -109,6 +115,27 @@ export class BoothRepository {
 
             await queryRunner.manager.save(BoothItem, boothItems);
 
+            // Update booth data status within the transaction
+            for (const boothItem of boothItems) {
+                const boothData = await queryRunner.manager.findOne(BoothData, {
+                    where: { 
+                        booth_name: boothItem.booth_num,
+                        booth_type: {
+                            name: boothItem.sector
+                        }
+                    }
+                });
+                if (boothData) {
+                    boothData.status = "reserved";
+                    boothData.booked_by = savedTransaction.created_by;
+                    boothData.bookdate = new Date();
+                    await queryRunner.manager.save(BoothData, boothData);
+                } else {
+                    console.warn(`Booth data not found for booth ${boothItem.booth_num} in sector ${boothItem.sector}`);
+                }
+            }
+
+            // Commit all database operations
             await queryRunner.commitTransaction();
 
             console.log('totalAmount', totalAmount);
@@ -116,21 +143,21 @@ export class BoothRepository {
             console.log('savedTransaction.id', savedTransaction.id);
             console.log('Currency', Currency.NGN);
 
-            //TODO: Create a Payment with the booth transaction id
+            // Create a Payment with the booth transaction id (outside transaction)
             const payment = await PaymentServiceClient.createPayment({
-                amount: Number(totalAmount),
+                amount: totalAmount,
                 currency: Currency.NGN,
                 user_id: userId,
                 transaction_id: savedTransaction.id,
                 transactionStatus: "pending"
             });
 
-            //TODO: Send Invoice to the user
-
             // Return with relations loaded
             return await this.getBoothTransactionById(savedTransaction.id);
         } catch (error) {
-            await queryRunner.rollbackTransaction();
+            if (queryRunner.isTransactionActive) {
+                await queryRunner.rollbackTransaction();
+            }
             console.error('Error creating booth reservation:', error);
             throw error;
         } finally {
@@ -326,6 +353,88 @@ export class BoothRepository {
             transaction.updated_by = updatedBy;
         }
 
+
         return await this.boothTransactionRepository.save(transaction);
+    }
+
+     async updateBoothsStatus(
+        transactionId: number,
+        status: string,
+        
+    ): Promise<BoothTransaction> {
+        await this.initializeRepositories();
+
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const transaction = await queryRunner.manager.findOne(BoothTransaction, {
+                where: { id: transactionId }
+            });
+
+            if (!transaction) {
+                throw new Error("Transaction not found");
+            }
+
+            const boothItems = await queryRunner.manager.find(BoothItem, {
+                where: { booth_transaction_id: transactionId }
+            });
+
+            transaction.payment_status = status;
+
+            // Update booth data status within the transaction
+            for (const boothItem of boothItems) {
+                const boothData = await queryRunner.manager.findOne(BoothData, {
+                    where: { 
+                        booth_name: boothItem.booth_num,
+                        booth_type: {
+                            name: boothItem.sector
+                        }
+                    }
+                });
+                if (boothData) {
+                    boothData.status = "booked";
+                    boothData.booked_by = transaction.created_by;
+                    await queryRunner.manager.save(BoothData, boothData);
+                } else {
+                    console.warn(`Booth data not found for booth ${boothItem.booth_num} in sector ${boothItem.sector}`);
+                }
+            }
+
+            // Save the transaction
+            await queryRunner.manager.save(BoothTransaction, transaction);
+
+            // Commit all database operations
+            await queryRunner.commitTransaction();
+
+            return transaction;
+        } catch (error) {
+            if (queryRunner.isTransactionActive) {
+                await queryRunner.rollbackTransaction();
+            }
+            console.error('Error updating booth status:', error);
+            throw error;
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    async getAllBooths(): Promise<BoothData[]> {
+        await this.initializeRepositories();
+
+        return await this.boothDataRepository.find();
+    }
+
+    async getAllBoothTypes(): Promise<BoothType[]> {
+        await this.initializeRepositories();
+
+        return await this.boothTypeRepository.find();
+    }
+
+    async getBoothsBySector(sector: string): Promise<BoothData[]> {
+        await this.initializeRepositories();
+
+        return await this.boothDataRepository.find({ where: { booth_type: { name: sector } } });
     }
 }

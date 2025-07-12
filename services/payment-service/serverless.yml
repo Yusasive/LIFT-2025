@@ -3,6 +3,7 @@ frameworkVersion: '4'
 
 provider:
   name: aws
+  timeout: 30
   runtime: nodejs18.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
@@ -50,6 +51,7 @@ functions:
 
   createPayment:
     handler: app/handlers/paymentHandler.handler
+    timeout: 30
     events:
       - httpApi:
           path: /make-payment

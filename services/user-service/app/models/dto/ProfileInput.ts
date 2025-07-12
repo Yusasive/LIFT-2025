@@ -42,6 +42,12 @@ export class BasicProfileInput {
     @IsOptional()
     status: string;
 
+    @IsOptional()
+    booth_preference: string;
+
+    @IsOptional()
+    booth_type: string;
+
     constructor() {
         this.firstName = '';
         this.lastName = '';

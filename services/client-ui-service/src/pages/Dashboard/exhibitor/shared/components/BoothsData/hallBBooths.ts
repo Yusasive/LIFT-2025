@@ -1587,32 +1587,7 @@ export const hallBBooths: { [key: string]: BoothData } = {
     "sqm": 9,
     "boothId": "N049"
   },
-  "S048": {
-    "coords": [
-      [
-        1740,
-        3480
-      ],
-      [
-        1920,
-        3480
-      ],
-      [
-        1920,
-        3660
-      ],
-      [
-        1740,
-        3660
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 2m",
-    "category": "Standard",
-    "price": 229020,
-    "sqm": 6,
-    "boothId": "S048"
-  },
+ 
   "N077": {
     "coords": [
       [

@@ -30,7 +30,10 @@ export default function CompleteProfile({ onComplete, isExhibitor = false }: Com
     country: "Nigeria",
     email: user?.email || "",
     phone: user?.phone || "",
-    company: "",
+    company: user?.company || "",
+    local: user?.local || "",
+    boothPreference: user?.boothPreference || "",
+    boothType: user?.boothType || "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -42,6 +45,30 @@ export default function CompleteProfile({ onComplete, isExhibitor = false }: Com
 
   // Get available states based on selected country
   const availableStates = formData.country ? getStatesForCountry(getCountryCodeByName(formData.country)) : [];
+
+  // Get booth type options based on local status and booth preference
+  const getBoothTypeOptions = () => {
+    if (!formData.boothPreference) return [];
+    
+    if (formData.boothPreference === 'indoor') {
+      console.log(formData.local);
+      if (formData.local.toLowerCase() === 'local') {
+        return ['Hall A', 'Hall B'];
+      } else if (formData.local.toLowerCase() === 'international') {
+        return ['African Hall', 'International Hall'];
+      }
+    } else if (formData.boothPreference === 'outdoor') {
+      return [
+        'Food, Drinks, Agriculture & Allied Products',
+        'Real Estate, Building Furniture & Fittings',
+        'ICT & Electronics Products'
+      ];
+    }
+    
+    return [];
+  };
+
+  const boothTypeOptions = getBoothTypeOptions();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +97,6 @@ export default function CompleteProfile({ onComplete, isExhibitor = false }: Com
       };
 
       const response = await userController.createProfile(updatedUser);
-
       if (response.success && response.data) {
         const updatedUserData: User = {
           ...response.data,
@@ -111,6 +137,11 @@ export default function CompleteProfile({ onComplete, isExhibitor = false }: Com
       // Reset state when country changes
       if (name === 'country') {
         newData.state = '';
+      }
+      
+      // Reset booth type when booth preference changes
+      if (name === 'boothPreference') {
+        newData.boothType = '';
       }
       
       return newData;
@@ -309,21 +340,82 @@ export default function CompleteProfile({ onComplete, isExhibitor = false }: Com
             )}
           </div>
         </div>
+
         {isExhibitor && (
-          <div className="md:col-span-2">
-            <label className="text-sm text-gray-600">Company</label>
-            <input
-              type="text"
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              placeholder="Enter company"
-              className={`w-full border rounded-md px-3 md:px-4 py-2 md:py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm md:text-base ${
-                errors.company ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-          </div>
+          <>
+            <div className="md:col-span-2">
+              <label className="text-sm text-gray-600">Company</label>
+              <input
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                placeholder="Enter company"
+                className={`w-full border rounded-md px-3 md:px-4 py-2 md:py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm md:text-base ${
+                  errors.company ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {/* Booth Preference Section */}
+            <div className="md:col-span-2">
+              <label className="text-sm text-gray-600 mb-2 block">Booth Preference</label>
+              <div className="flex gap-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="boothPreference"
+                    value="indoor"
+                    checked={formData.boothPreference === "indoor"}
+                    onChange={handleChange}
+                    className="mr-2 text-primary-600 focus:ring-primary-400"
+                  />
+                  <span className="text-sm">Indoor Hall</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="boothPreference"
+                    value="outdoor"
+                    checked={formData.boothPreference === "outdoor"}
+                    onChange={handleChange}
+                    className="mr-2 text-primary-600 focus:ring-primary-400"
+                  />
+                  <span className="text-sm">Outdoor Sectors</span>
+                </label>
+              </div>
+              {errors.boothPreference && (
+                <p className="text-red-500 text-xs mt-1">{errors.boothPreference}</p>
+              )}
+            </div>
+
+            {/* Booth Type Section - Only show if booth preference is selected */}
+            {formData.boothPreference && (
+              <div className="md:col-span-2">
+                <label className="text-sm text-gray-600">Booth Type</label>
+                <select
+                  name="boothType"
+                  value={formData.boothType}
+                  onChange={handleChange}
+                  className={`w-full border rounded-md px-3 md:px-4 py-2 md:py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm md:text-base ${
+                    errors.boothType ? "border-red-500" : "border-gray-300"
+                  }`}
+                                  >
+                    <option value="">Select booth type</option>
+                    {boothTypeOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                {errors.boothType && (
+                  <p className="text-red-500 text-xs mt-1">{errors.boothType}</p>
+                )}
+              </div>
+            )}
+          </>
         )}
+
         <div className="md:col-span-2 mt-4 md:mt-6">
           {errors.submit && (
             <div className="text-red-500 text-sm text-center mb-4">{errors.submit}</div>

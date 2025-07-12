@@ -19,6 +19,7 @@ import ReservationDetailsDialog from '../components/ReservationDetailsDialog';
 import ConfirmDialog from '../../../components/common/ConfirmDialog';
 import ToastNotification from '@/components/common/ToastNotification';
 import { ExhibitorSetupProgress } from './ExhibitorSetupProgress';
+import LoadingOverlay from '@/components/common/LoadingOverlay';
 
 export default function OverviewTab() {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ export default function OverviewTab() {
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState<BoothTransaction | null>(null);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   // Fetch booth reservations on component mount
   useEffect(() => {
     dispatch(getUserBoothReservations() as any);
@@ -159,12 +161,35 @@ export default function OverviewTab() {
     },
     {
       name: 'Reserved On',
-      selector: (row: BoothTransaction) => row.createdAt || '-',
+      selector: (row: BoothTransaction) => {
+        if (!row.createdAt) return '-';
+        return new Date(row.createdAt).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      },
       sortable: true,
     },
     {
-      name: 'Paied On',
-      selector: (row: BoothTransaction) => row.updatedAt || '-',
+      name: 'Payed On',
+      selector: (row: BoothTransaction) => {
+        if (row.paymentStatus?.toLowerCase() === 'paid') {
+          if (!row.updatedAt) return '-';
+          return new Date(row.updatedAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        } else {
+          return '-';
+        }
+      },
+      sortable: true,
     },
     {
       name: 'Actions',
@@ -172,7 +197,7 @@ export default function OverviewTab() {
         <div className="flex space-x-2">
           <button 
             className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-            onClick={() => handleViewDetails(row.id)}
+            onClick={() => handleViewDetails(row.transactionId || row.id)}
           >
             View
           </button>
@@ -184,12 +209,12 @@ export default function OverviewTab() {
               Pay Now
             </button>
           )}
-          <button 
+          {/* <button 
             className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
             onClick={() => handleConfirmCancelReservation(row.transactionId || 0)}
           >
             Cancel
-          </button>
+          </button> */}
         </div>
       ),
       minWidth: '250px',
@@ -198,17 +223,19 @@ export default function OverviewTab() {
 
   // Handle view details action
   const handleViewDetails = (transactionId: number) => {
-    const reservation = boothTransactions.find(t => t.transactionId === transactionId || t.id === transactionId);
+    console.log("View Transactions", boothTransactions);
+    // The API returns transactionId, so we need to match by that field
+    const reservation = boothTransactions.find(t => t.transactionId === transactionId);
     setSelectedReservation(reservation || null);
     setShowDetailsDialog(true);
   };
 
   // Handle cancel reservation action
-  const handleConfirmCancelReservation = (transactionId: number) => {
-    setSelectedReservation(boothTransactions.find(t => t.transactionId === transactionId || t.id === transactionId) || null);
-    setShowDetailsDialog(false);
-    setShowConfirmationDialog(true);
-  };
+  // const handleConfirmCancelReservation = (transactionId: number) => {
+  //   setSelectedReservation(boothTransactions.find(t => t.transactionId === transactionId || t.id === transactionId) || null);
+  //   setShowDetailsDialog(false);
+  //   setShowConfirmationDialog(true);
+  // };
 
   const handleCancelReservation = (transactionId: number) => {
     console.log("Cancel Reservation", transactionId);
@@ -226,17 +253,20 @@ export default function OverviewTab() {
       setShowToast(true);
       return;
     }
+
+    setShowLoading(true);
     
     const response = await PaymentController.getInstance().makePayment({
       user_id: user._id,
       email: user.email,
       amount: totalAmount,
       currency: 'NGN',
-      transaction_id:transactionId,  //TODO: Get the transaction id from the booth reservation
+      transaction_id:transactionId, 
     });
 
     if (response.success && response.data?.authorization_url) {
       setPaymentUrl(response.data.authorization_url);
+      setShowLoading(false);
       setShowPaymentDialog(true);
     } else {
       setToastType('error');
@@ -332,6 +362,9 @@ export default function OverviewTab() {
           setToastType('success');
           setToastMessage('Payment successful!');
           setShowToast(true);
+          
+          // Reload the table when payment is complete
+          dispatch(getUserBoothReservations() as any);
         }}
         onPaymentError={(msg) => {
           setShowPaymentDialog(false);
@@ -357,76 +390,9 @@ export default function OverviewTab() {
         cancelText="Keep Reservation"
       />
 
+      <LoadingOverlay isLoading={showLoading} />
+
       <ToastComponent />
     </div>
   );
 }
-
-
-// function OverviewTab() {
-//   return (
-//     <div className="space-y-8">
-//       {/* Key Metrics */}
-      
-
-//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-       
-
-//         {/* Upcoming Deadlines & Booth Reservations */}
-//         <div className="lg:col-span-2 space-y-8">
-         
-
-//           {/* Booth Reservations */}
-//           <div className="bg-white rounded-xl border border-gray-200 p-6">
-//             <div className="flex items-center justify-between mb-6">
-//               <h3 className="text-lg font-semibold text-gray-900">Your Booth Reservations</h3>
-//               <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-//                 Add Booth
-//               </button>
-//             </div>
-//             <div className="overflow-x-auto">
-//               <table className="w-full">
-//                 <thead>
-//                   <tr className="border-b border-gray-200">
-//                     <th className="text-left py-3 px-4 font-medium text-gray-900">Booth #</th>
-//                     <th className="text-left py-3 px-4 font-medium text-gray-900">Size</th>
-//                     <th className="text-left py-3 px-4 font-medium text-gray-900">Price</th>
-//                     <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-//                     <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
-//                   </tr>
-//                 </thead>
-//                 <tbody className="divide-y divide-gray-200">
-//                   <BoothRow booth="15" size="3x3" price="₦8,000" status="Paid" />
-//                   <BoothRow booth="16" size="3x3" price="₦8,000" status="Paid" />
-//                   <BoothRow booth="17" size="3x3" price="₦8,000" status="Paid" />
-//                   <BoothRow booth="18" size="3x3" price="₦8,000" status="Paid" />
-//                   <BoothRow booth="19" size="3x3" price="₦8,000" status="Paid" />
-//                 </tbody>
-//               </table>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Need Assistance Section */}
-//       <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200 p-6">
-//         <div className="flex items-start gap-4">
-//           <div className="p-2 bg-green-200 rounded-lg">
-//             <svg className="h-6 w-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-//             </svg>
-//           </div>
-//           <div className="flex-1">
-//             <h4 className="font-semibold text-green-900 mb-2">Need Assistance?</h4>
-//             <p className="text-sm text-green-800 mb-4">
-//               Our support team is available to assist you with any questions regarding your booth setup, staff registration, or event details.
-//             </p>
-//             <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-//               Contact Support
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

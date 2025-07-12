@@ -43,16 +43,16 @@ export class BoothTransaction {
     @Column({ type: "varchar", length: 50, default: "active" })
     validity_status: string;
 
-@Column({ type: "integer", nullable: true })
+    @Column({ type: "integer", nullable: true })
     created_by: number;
 
     @Column({ type: "integer", nullable: true })
     updated_by: number;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updated_at: Date;
 
     @Column({ type: "integer", nullable: true })

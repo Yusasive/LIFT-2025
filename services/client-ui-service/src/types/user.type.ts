@@ -12,5 +12,8 @@ export interface SimpleUser {
 export interface User extends SimpleUser{
     address: Address[];
     company: string;
+    local: string;
+    boothPreference: string;
+    boothType: string;
     profileImage: string;
 }

@@ -18,10 +18,10 @@ export interface VerifyPaymentResponse {
     amount: number;
     currency: string;
     payStackstatus: string;
-    reference: string;
+    reference?: string;
     user_id: number;
     email: string;
-    // transaction_id: number;
+    transactionId: number;
 
 }
 

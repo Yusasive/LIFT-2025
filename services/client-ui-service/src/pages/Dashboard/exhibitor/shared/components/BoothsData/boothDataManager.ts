@@ -3,35 +3,149 @@
 import { BoothData, EnhancedBoothData } from '../../types/booth.types';
 import { LayoutConfig } from './types/layout.types';
 import { getLayoutConfigByName, layoutExistsByName } from './layouts/layoutRegistry';
+import { BoothController } from '../../../../../../controllers/BoothController';
 
-// Import existing booth data
-import { africaHallBooths } from './africaHallBooths';
-import { internationalHallBooths } from './internationalHallBooths';
-import { hallABooths } from './hallABooths';
-import { hallBBooths } from './hallBBooths';
-import { fdaSectorBooths } from './fdaSectorBooths';
-import {rbfSectorBooths } from './rbfSectorBooths';
-import {eeiSectorBooths } from './eeiSectorBooths';
-// Original booth collections (maintaining backward compatibility)
-export const allBoothsByLocation: { [key: string]: { [key: string]: BoothData } } = {
+export const sectionNames = [
+  'AFRICAHALL' ,
+  'INTERNATIONAL', 
+  'HALLA',
+  'HALLB',
+  'FDA',
+  'RBF',
+  'EEI',
+  'HCT',
+];
+
+const sectionNameMapping: { [key: string]: string } = {
   // Halls
-  'Africa Hall': africaHallBooths,
-  'International Hall': internationalHallBooths,
-  'Hall A': hallABooths || {},
-  'Hall B': hallBBooths || {},
+  'Africa Hall': 'AFRICAHALL',
+  'International Hall': 'INTERNATIONAL', 
+  'Hall A': 'HALLA',
+  'Hall B': 'HALLB',
   
   // Sectors
-  'Food, Drinks, Agriculture & Allied Products': fdaSectorBooths || {},
-  'Real Estate, Building Furniture & Fittings': rbfSectorBooths || {},
-  'ICT & Electronics Products': eeiSectorBooths || {},
-  // Future sectors will be added here as they're implemented
+  'Food, Drinks, Agriculture & Allied Products': 'FDA',
+  'Real Estate, Building Furniture & Fittings': 'RBF',
+  'ICT & Electronics Products': 'EEI',
+  'Household Cosmetics & Textile Products': 'HCT',
 };
+
+/**
+ * Map old section name to new backend section name
+ */
+function mapSectionName(oldSectionName: string): string {
+  return sectionNameMapping[oldSectionName]
+}
+
+// Original booth collections (maintaining backward compatibility) - now populated from backend
+export const allBoothsByLocation: { [key: string]: { [key: string]: BoothData } } = {};
 
 /**
  * Get basic booth data for a location (backward compatibility)
  */
 export function getBoothsForLocation(locationName: string): { [key: string]: BoothData } {
-  return allBoothsByLocation[locationName] || {};
+  return allBoothsByLocation[mapSectionName(locationName)] || {};
+}
+
+/**
+ * Initialize booth data from backend
+ */
+export async function initializeBoothData(): Promise<void> {
+  try {
+    console.log('initializeBoothData called - starting initialization...');
+    const boothController = BoothController.getInstance();
+    console.log('BoothController instance obtained');
+    
+    // Fetch booth data for all sections in parallel
+    const boothPromises = sectionNames.map(async (sectionName) => {
+      try {
+  
+        const booths = await boothController.getBoothsDatabySectionName(sectionName);
+        
+        const boothData: { [key: string]: BoothData } = {};
+        
+        booths.forEach((booth: any) => {
+          boothData[booth.booth_id || booth.boothId] = {
+            coords: booth.coords || [],
+            status: booth.status || 'available',
+            size: booth.size || '3m x 3m',
+            category: booth.category || 'Standard',
+            price: Number(booth.price) || 0,
+            sqm: Number(booth.sqm) || 9,
+            boothId: booth.booth_id || booth.boothId,
+            gridPosition: booth.grid_position || '1,1'
+          };
+        });
+
+        console.log('Booth data for section:', sectionName, boothData);
+        
+        return { sectionName, boothData };
+      } catch (error) {
+        console.error(`Error fetching booth data for ${sectionName}:`, error);
+        return { sectionName, boothData: {} };
+      }
+    });
+    
+    const results = await Promise.all(boothPromises);
+    
+    // Populate allBoothsByLocation
+    results.forEach(({ sectionName, boothData }) => {
+      allBoothsByLocation[sectionName] = boothData;
+    });
+    
+    console.log('Booth data initialized from backend:', allBoothsByLocation);
+  } catch (error) {
+    console.error('Error initializing booth data from backend:', error);
+  }
+}
+
+/**
+ * Get booth data from backend for a specific section
+ */
+export async function getBoothsFromBackend(sectionName: string): Promise<{ [key: string]: BoothData }> {
+  try {
+    const boothController = BoothController.getInstance();
+    const mappedSectionName = mapSectionName(sectionName);
+    console.log(`Getting booths for section: ${sectionName} (mapped to: ${mappedSectionName})`);
+    const response = await boothController.getBoothsDatabySectionName(mappedSectionName);
+    
+    if (response && response.length > 0) {
+      // Convert backend booth data to the expected format
+      const boothData: { [key: string]: BoothData } = {};
+      
+      response.forEach((booth: any) => {
+        boothData[booth.booth_id || booth.boothId] = {
+          coords: booth.coords || [],
+          status: booth.status || 'available',
+          size: booth.size || '3m x 3m',
+          category: booth.category || 'Standard',
+          price: booth.price || 0,
+          sqm: booth.sqm || 9,
+          boothId: booth.booth_id || booth.boothId,
+          gridPosition: booth.grid_position || '1,1',
+          bookedBy: booth.booked_By || undefined // Optional field for booked booths
+        };
+      });
+      
+      return boothData;
+    }
+    
+    return {};
+  } catch (error) {
+    console.error(`Error fetching booth data for ${sectionName}:`, error);
+    // Fallback to static data if backend fails
+    return getBoothsForLocation(sectionName);
+  }
+}
+
+/**
+ * Get booth data for a location with backend integration
+ */
+export async function getBoothsForLocationWithBackend(locationName: string, useBackend: boolean = true): Promise<{ [key: string]: BoothData }> {
+  if (useBackend) {
+    return await getBoothsFromBackend(locationName);
+  }
+  return getBoothsForLocation(locationName);
 }
 
 /**
@@ -43,6 +157,23 @@ export function getEnhancedBoothsForLocation(locationName: string): { [key: stri
   
   if (!layoutConfig) {
     // If no layout config exists, return basic booths with minimal enhancement
+    return enhanceBoothsBasic(basicBooths, locationName);
+  }
+  
+  return applyLayoutConfigToBooths(basicBooths, layoutConfig);
+}
+
+/**
+ * Get enhanced booth data with backend integration
+ */
+export async function getEnhancedBoothsForLocationWithBackend(locationName: string, useBackend: boolean = true): Promise<{ [key: string]: EnhancedBoothData }> {
+  const basicBooths = useBackend 
+    ? await getBoothsFromBackend(locationName)
+    : getBoothsForLocation(locationName);
+    
+  const layoutConfig = getLayoutConfigByName(locationName);
+  
+  if (!layoutConfig) {
     return enhanceBoothsBasic(basicBooths, locationName);
   }
   
@@ -297,6 +428,7 @@ export function getAllLocationSummary(): { [locationName: string]: LocationSumma
   
   Object.keys(allBoothsByLocation).forEach(locationName => {
     const booths = getBoothsForLocation(locationName);
+    
     const layoutConfig = getLayoutConfigByName(locationName);
     
     summary[locationName] = {
@@ -518,5 +650,55 @@ export function migrateBoothData(locationName: string): {
       message: `Migration failed for ${locationName}: ${error}`,
       migratedCount: 0
     };
+  }
+}
+
+/**
+ * Get all booth data from backend for all sections
+ */
+export async function getAllBoothsFromBackend(): Promise<{ [key: string]: { [key: string]: BoothData } }> {
+  const allBooths: { [key: string]: { [key: string]: BoothData } } = {};
+  
+  try {
+    const boothController = BoothController.getInstance();
+    
+    // Fetch booth data for all sections in parallel
+    const boothPromises = sectionNames.map(async (sectionName) => {
+      try {
+        const mappedSectionName = mapSectionName(sectionName);
+        const booths = await boothController.getBoothsDatabySectionName(mappedSectionName);
+        const boothData: { [key: string]: BoothData } = {};
+        
+        booths.forEach((booth: any) => {
+          boothData[booth.booth_id || booth.boothId] = {
+            coords: booth.coords || [],
+            status: booth.status || 'available',
+            size: booth.size || '3m x 3m',
+            category: booth.category || 'Standard',
+            price: booth.price || 0,
+            sqm: booth.sqm || 9,
+            boothId: booth.booth_id || booth.boothId
+          };
+        });
+        
+        return { sectionName, boothData };
+      } catch (error) {
+        console.error(`Error fetching booth data for ${sectionName}:`, error);
+        // Fallback to static data
+        return { sectionName, boothData: getBoothsForLocation(sectionName) };
+      }
+    });
+    
+    const results = await Promise.all(boothPromises);
+    
+    results.forEach(({ sectionName, boothData }) => {
+      allBooths[sectionName] = boothData;
+    });
+    
+    return allBooths;
+  } catch (error) {
+    console.error('Error fetching all booth data from backend:', error);
+    // Fallback to static data
+    return allBoothsByLocation;
   }
 }

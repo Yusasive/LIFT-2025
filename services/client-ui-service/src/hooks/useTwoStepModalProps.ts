@@ -137,6 +137,7 @@ export const useTwoStepModalProps = ({
     return calculateTotalAmount(selectedBooths);
   }, [selectedBooths]);
 
+  
   // Add booth breakdown for detailed display
   const boothBreakdown = useMemo(() => {
     return getBoothBreakdown(selectedBooths);

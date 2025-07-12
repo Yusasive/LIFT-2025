@@ -13,6 +13,9 @@ export class BoothController {
         switch(true) {
             case httpMethod === 'POST' && path === '/booth/reserve':
                 return await this.boothService.CreateBoothReservation(event);
+
+            case httpMethod === 'PATCH' && path === '/booth/reservations':
+                return await this.boothService.updatePaymentStatus(event);
             
             case httpMethod === 'GET' && path === '/booth/reservations':
                 return await this.boothService.GetUserReservations(event);
@@ -25,6 +28,16 @@ export class BoothController {
             
             case httpMethod === 'GET' && path === '/booth/stats':
                 return await this.boothService.GetBoothStats(event);
+            
+            case httpMethod === 'GET' && path === '/booth/all':
+                return await this.boothService.GetBooths(event);
+            
+            case httpMethod === 'GET' && path === '/booth/sector':
+                if (event.queryStringParameters?.sector) {
+                    return await this.boothService.GetBoothsBySector(event);
+                } else {
+                    return await this.boothService.GetBoothSectors(event);
+                }
             
             default:
                 return await this.boothService.ResponseWithError(event);

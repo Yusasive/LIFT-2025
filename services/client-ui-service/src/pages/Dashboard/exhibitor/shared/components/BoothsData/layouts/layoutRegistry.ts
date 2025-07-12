@@ -6,6 +6,11 @@ import { hallAConfig } from './hallAConfig';
 import { hallBConfig } from './hallBConfig';
 import { africaHallConfig } from './africaHallConfig';
 import { internationalHallConfig } from './internationalHallConfig';
+import { eeiSectorConfig } from './eeiSectorConfig';
+import { fdaSectorConfig } from './fdaSectorConfig';
+import { rbfSectorConfig } from './rbfSectorConfig'; // ADD THIS
+import { hctSectorConfig } from './hctSectorConfig';
+// import { hctSectorConfig } from './hctSectorConfig'; 
 
 // Central registry of all layout configurations
 export const LAYOUT_REGISTRY: { [layoutId: string]: LayoutConfig } = {
@@ -14,10 +19,25 @@ export const LAYOUT_REGISTRY: { [layoutId: string]: LayoutConfig } = {
    'hall-b': hallBConfig,
    'africa-hall': africaHallConfig,
    'international-hall': internationalHallConfig,
-  // 'fda-sector': fdaSectorConfig,
+   'eei-sector': eeiSectorConfig,
+   'fda-sector': fdaSectorConfig,
+     'Real Estate, Building Furniture & Fittings': rbfSectorConfig,
+  'RBF Sector': rbfSectorConfig, // Also add this alias
+   // ... other layouts ...
+ 
+  'RBF - Real Estate, Building Furniture & Fittings': rbfSectorConfig, // Add this
+  'Real Estate Building Furniture Fittings': rbfSectorConfig, // Add this without punctuation
+  'hct-sector': hctSectorConfig,
+'Household Cosmetics & Textile Products': hctSectorConfig,
+'HCT Sector': hctSectorConfig,
+  // ... rest
   // etc.
 };
-
+console.log('🔍 Layout Registry Debug:', {
+  hasRBF: 'Real Estate, Building Furniture & Fittings' in LAYOUT_REGISTRY,
+  rbfConfig: LAYOUT_REGISTRY['Real Estate, Building Furniture & Fittings'],
+  allKeys: Object.keys(LAYOUT_REGISTRY)
+});
 // Mapping from display names to layout IDs
 export const LAYOUT_NAME_MAPPING: { [displayName: string]: string } = {
   'Hall A': 'hall-a',
@@ -32,6 +52,7 @@ export const LAYOUT_NAME_MAPPING: { [displayName: string]: string } = {
   'Real Estate, Building Furniture & Fittings': 'rbf-sector',
   'Conglomerate': 'cog-sector',
   'Publication, Healthcare & Sport Products': 'oth-sector'
+  
 };
 
 /**
@@ -45,7 +66,18 @@ export function getLayoutConfig(layoutId: string): LayoutConfig | null {
  * Get layout configuration by display name
  */
 export function getLayoutConfigByName(displayName: string): LayoutConfig | null {
-  const layoutId = LAYOUT_NAME_MAPPING[displayName];
+   console.log('🔍 getLayoutConfigByName called with:', displayName);
+  console.log('🔍 Registry has this key?', displayName in LAYOUT_REGISTRY);
+  console.log('🔍 Config found:', LAYOUT_REGISTRY[displayName]);
+ 
+  const layoutId = LAYOUT_NAME_MAPPING[displayName]?.trim();;
+  // const trimmedName = layoutName?.trim();
+ console.log('🔍 returning 2024:', layoutId.trim());
+ if(layoutId==="rbf-sector") {
+  const result = LAYOUT_REGISTRY[displayName.trim()] || null;
+  console.log('🔍 Returning:', result);
+  return result;
+  }
   return layoutId ? getLayoutConfig(layoutId) : null;
 }
 

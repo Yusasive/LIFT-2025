@@ -286,10 +286,10 @@ export class BoothRepository {
 
   async updateBoothTransactionStatus(request: UpdateTransactionStatusRequest): Promise<BoothTransaction> {
     try {
-      const { transactionId, ...updateData } = request;
+    
       const response = await this.axiosInstance.patch<ApiResponse<BoothTransaction>>(
-        `/reservations/${transactionId}/status`,
-        updateData,
+        `booth/reservations`,
+        request,
         {
           withCredentials: true
         }
@@ -354,6 +354,23 @@ export class BoothRepository {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || 'Failed to check reservation validity');
+      }
+      throw error;
+    }
+  }
+
+  async getBoothsDatabySectionName(sector: string): Promise<BoothItem[]> {
+    try {
+      const response = await this.axiosInstance.get<ApiResponse<BoothItem[]>>(
+        `/booth/sector?sector=${sector}`,
+        {
+          withCredentials: true
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || 'Failed to fetch booth data by section name');
       }
       throw error;
     }

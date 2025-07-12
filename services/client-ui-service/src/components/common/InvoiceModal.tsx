@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Download, Printer, Eye } from 'lucide-react';
+import { X, Download, Printer } from 'lucide-react';
 import { 
   InvoiceData, 
   downloadInvoicePDF, 
-  printInvoicePDF, 
   generateInvoicePDF 
 } from '../../utils/invoiceUtils';
 import { preloadLogo, getDefaultLogoPath } from '../../utils/logoUtils';
@@ -38,6 +37,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ show, onClose, invoiceData 
       downloadInvoicePDF(invoiceData, { logo: logoBase64 || undefined });
     } catch (error) {
       console.error('Error downloading invoice:', error);
+      alert('Error generating invoice. Please try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -46,39 +46,20 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ show, onClose, invoiceData 
   const handlePrint = async () => {
     setIsGenerating(true);
     try {
-      printInvoicePDF(invoiceData, { logo: logoBase64 || undefined });
+      const doc = generateInvoicePDF(invoiceData, { logo: logoBase64 || undefined });
+      const pdfBlob = new Blob([doc.output('blob')], { type: 'application/pdf' });
+      const blobUrl = URL.createObjectURL(pdfBlob);
+
+      // Open the PDF directly in a new tab/window
+      const newWindow = window.open(blobUrl, '_blank');
+      if (!newWindow) {
+        alert('Please allow popups for this site to print the invoice. You can also use the Download PDF button to save and print the invoice.');
+      }
+      // Optionally, you can auto-trigger print after a delay, but most browsers block this for blob URLs.
+      setTimeout(() => { newWindow?.print(); }, 1000);
     } catch (error) {
       console.error('Error printing invoice:', error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handlePreview = async () => {
-    setIsGenerating(true);
-    try {
-      const doc = generateInvoicePDF(invoiceData, { logo: logoBase64 || undefined });
-      const pdfDataUrl = doc.output('dataurlstring');
-      const newWindow = window.open();
-      if (newWindow) {
-        newWindow.document.write(`
-          <html>
-            <head>
-              <title>Invoice Preview</title>
-              <style>
-                body { margin: 0; padding: 0; }
-                iframe { width: 100%; height: 100vh; border: none; }
-              </style>
-            </head>
-            <body>
-              <iframe src="${pdfDataUrl}"></iframe>
-            </body>
-          </html>
-        `);
-        newWindow.document.close();
-      }
-    } catch (error) {
-      console.error('Error previewing invoice:', error);
+      alert('Error generating invoice for printing. Please try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -129,9 +110,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ show, onClose, invoiceData 
                   <div className="text-sm text-gray-600">
                     <p>Lagos International Trade Fair</p>
                     <p>Lagos, Nigeria</p>
-                    <p>Phone: +234 123 456 7890</p>
-                    <p>Email: info@lagostradefair.com</p>
-                    <p>Website: www.lagostradefair.com</p>
+                    <p>Phone: +234 700 524 6724</p>
+                    <p>Email: litf@lagoschamber.com</p>
+                    <p>Website: www.lagoschamber.com</p>
                   </div>
                 </div>
               </div>
@@ -163,32 +144,37 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ show, onClose, invoiceData 
               </div>
             </div>
 
-            {/* Items Table */}
+            {/* Items Table (Booth Summary) */}
             <div className="mb-8">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300">
                   <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Description</th>
-                      <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Size</th>
-                      <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Sector</th>
-                      <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Quantity</th>
-                      <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Unit Price</th>
-                      <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Total</th>
+                    <tr className="bg-blue-600 text-white">
+                      <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Location</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Booth Name</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Total Area</th>
+                      <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Package Price</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {invoiceData.items.map((item, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="border border-gray-300 px-4 py-2">{item.description}</td>
-                        <td className="border border-gray-300 px-4 py-2">{item.size || '-'}</td>
-                        <td className="border border-gray-300 px-4 py-2">{item.sector || '-'}</td>
-                        <td className="border border-gray-300 px-4 py-2 text-center">{item.quantity}</td>
-                        <td className="border border-gray-300 px-4 py-2 text-right">
-                          {invoiceData.currency}{item.unitPrice.toLocaleString()}
+                    {(invoiceData.boothBreakdown || []).map((group: any, idx: number) => (
+                      <tr key={idx} className="hover:bg-gray-50">
+                        <td className="border border-gray-300 px-4 py-2">{group.location}</td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <div className="flex flex-wrap gap-1">
+                            {group.boothIds.map((id: string) => (
+                              <span key={id} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">{id}</span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {typeof group.totalSqm === 'number' ? `${group.totalSqm}m²` : 
+                           typeof group.totalSqm === 'string' ? `${parseFloat(group.totalSqm) || 0}m²` : '0m²'}
                         </td>
                         <td className="border border-gray-300 px-4 py-2 text-right">
-                          {invoiceData.currency}{item.total.toLocaleString()}
+                          {invoiceData.currency}
+                          {typeof group.packagePrice === 'number' ? group.packagePrice.toLocaleString() :
+                           typeof group.packagePrice === 'string' ? (parseFloat(group.packagePrice) || 0).toLocaleString() : '0'}
                         </td>
                       </tr>
                     ))}
@@ -203,9 +189,12 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ show, onClose, invoiceData 
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal:</span>
-                    <span>{invoiceData.currency}{invoiceData.subtotal.toLocaleString()}</span>
+                    <span>{invoiceData.currency}
+                      {typeof invoiceData.subtotal === 'number' ? invoiceData.subtotal.toLocaleString() :
+                       typeof invoiceData.subtotal === 'string' ? (parseFloat(invoiceData.subtotal) || 0).toLocaleString() : '0'}
+                    </span>
                   </div>
-                  {invoiceData.tax > 0 && (
+                  {(typeof invoiceData.tax === 'number' ? invoiceData.tax : parseFloat(invoiceData.tax) || 0) > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">Tax (Inclusive):</span>
                       <span>-</span>
@@ -218,7 +207,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ show, onClose, invoiceData 
                   <div className="flex justify-between border-t pt-2">
                     <span className="font-semibold">Total:</span>
                     <span className="font-semibold text-lg">
-                      {invoiceData.currency}{invoiceData.total.toLocaleString()}
+                      {invoiceData.currency}
+                      {typeof invoiceData.total === 'number' ? invoiceData.total.toLocaleString() :
+                       typeof invoiceData.total === 'string' ? (parseFloat(invoiceData.total) || 0).toLocaleString() : '0'}
                     </span>
                   </div>
                 </div>
@@ -235,20 +226,12 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ show, onClose, invoiceData 
           {/* Action Buttons */}
           <div className="px-6 py-4 bg-gray-50 border-t flex justify-end space-x-3">
             <button
-              onClick={handlePreview}
-              disabled={isGenerating}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-            >
-              <Eye size={16} className="mr-2" />
-              Preview
-            </button>
-            <button
               onClick={handlePrint}
               disabled={isGenerating}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Printer size={16} className="mr-2" />
-              Print
+              {isGenerating ? 'Generating...' : 'Print'}
             </button>
             <button
               onClick={handleDownload}
@@ -256,7 +239,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({ show, onClose, invoiceData 
               className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <Download size={16} className="mr-2" />
-              Download PDF
+              {isGenerating ? 'Generating...' : 'Download PDF'}
             </button>
           </div>
         </div>

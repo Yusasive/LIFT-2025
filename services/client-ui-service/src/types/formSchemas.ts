@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { UserRole } from '../repository/UserRepository';
+import parsePhoneNumber from 'libphonenumber-js'
 
 export const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -10,6 +11,9 @@ export const profileSchema = z.object({
   country: z.string().min(1, 'Country is required'),
   email: z.string().email('Invalid email'),
   phone: z.string().min(1, 'Phone number is required'),
+  local: z.string().min(1, 'Local is required'),
+  boothPreference: z.string().min(1, 'Booth preference is required'),
+  boothType: z.string().min(1, 'Booth type is required'),
   company: z.string().optional(),
 });
 
@@ -40,6 +44,7 @@ export type LoginFormData = {
   submit?: string;
 };
 
+// Schema for form validation (phone without country code)
 export const registerSchema = z.object({
   email: z.string().email('Invalid email'),
   password: z.string()
@@ -49,7 +54,16 @@ export const registerSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
   confirm_password: z.string().min(1, 'Confirm your password'),
-  phone: z.string().min(1, 'Phone number is required'),
+  phone: z.string().refine((val) => {
+    try {
+      const phoneNumber = parsePhoneNumber(val);
+      return phoneNumber && phoneNumber.isValid();
+    } catch (error) {
+      return false;
+    }
+  }, {
+    message: 'Invalid phone number',
+  }),
   company_name: z.string().optional(),
 }).refine((data) => data.password === data.confirm_password, {
   message: "Passwords don't match",

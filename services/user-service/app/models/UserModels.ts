@@ -22,6 +22,8 @@ export interface UserModel {
 
   // Exhibitor-only fields
   company?: string;
+  booth_preference?: string;
+  booth_type?: string;
   status?: string;
   pin_code?: string;
   lat?: number;

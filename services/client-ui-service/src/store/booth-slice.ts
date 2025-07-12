@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { BoothController } from "../controllers/BoothController";
+import { initializeBoothData } from "../pages/Dashboard/exhibitor/shared/components/BoothsData/boothDataManager";
 
 // Type definitions based on backend repository structure
 // Update BoothItem interface to match API response
@@ -159,13 +160,20 @@ export const getUserBoothReservations = createAsyncThunk(
   'booth/getUserBoothReservations',
   async (_, { rejectWithValue }) => {
     try {
+      console.log('Starting getUserBoothReservations - initializing booth data...');
+      
+      // Initialize booth data from backend first
+      await initializeBoothData();
+      console.log('Booth data initialization completed');
+      
       const response = await boothController.getUserReservations();
       if (!response.data) {
         return rejectWithValue('No reservation data returned from server');
       }
-    console.log('User reservations fetched:', response.data);
+      console.log('User reservations fetched:', response.data);
       return response.data;
     } catch (error: any) {
+      console.error('Error in getUserBoothReservations:', error);
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch user reservations');
     }
   }
@@ -286,34 +294,34 @@ const boothSlice = createSlice({
     },
     resetBoothState: () => initialState,
    
-  updatePaymentStatus: (state, action: PayloadAction<{reference: string, status: string}>) => {
-      const { reference, status } = action.payload;
+  // updatePaymentStatus: (state, action: PayloadAction<{transactionId: string, status: string}>) => {
+    //  const { transactionId, status } = action.payload;
       
       // Update boothTransactions
-      state.boothTransactions = state.boothTransactions.map(transaction => {
+    //  state.boothTransactions = state.boothTransactions.map(transaction => {
         // You might need to match by reference or transaction ID
         // Adjust this condition based on how you store payment reference
-        if (transaction.id.toString() === reference || 
-            transaction.transactionId?.toString() === reference) {
-          return {
-            ...transaction,
-            paymentStatus: status
-          };
-        }
-        return transaction;
-      });
+        // if (transaction.id.toString() === transactionId || 
+        //     transaction.transactionId?.toString() === transactionId) {
+        //   return {
+        //     ...transaction,
+        //     paymentStatus: status
+        //   };
+        // }
+        // return transaction;
+  //    });
       
       // Also update the booths array (if it's separate)
-      state.booths = state.booths.map(transaction => {
-        if (transaction.id.toString() === reference ||  transaction.transactionId?.toString() === reference) {
-          return {
-            ...transaction,
-            paymentStatus: status
-          };
-        }
-        return transaction;
-      });
-  }
+  //     state.booths = state.booths.map(transaction => {
+  //       if (transaction.id.toString() === transactionId ||  transaction.transactionId?.toString() === transactionId) {
+  //         return {
+  //           ...transaction,
+  //           paymentStatus: status
+  //         };
+  //       }
+  //       return transaction;
+  //     });
+  // }
   },
   extraReducers: (builder) => {
     builder
@@ -521,7 +529,7 @@ export const {
   clearAvailabilityCheck, 
   clearError, 
   resetBoothState ,
-  updatePaymentStatus // ADD THIS EXPORT
+  // updatePaymentStatus // ADD THIS EXPORT
 } = boothSlice.actions;
 
 export default boothSlice.reducer;

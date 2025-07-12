@@ -1,9 +1,10 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import { PaymentController } from '@/controllers/PaymentController';
-// import { useDispatch } from 'react-redux'; // ADD THIS IMPORT
-// import {updatePaymentStatus} from '../../store/booth-slice'; // FIXED IMPORT
+//  import { useDispatch } from 'react-redux'; // ADD THIS IMPORT
+ //import {updateBoothTransactionStatus} from '../../store/booth-slice'; // FIXED IMPORT
 import {Z_INDEX} from '../../utils/zIndexManager';
+import { BoothController } from '@/controllers/BoothController';
 interface PaystackPaymentDialogProps {
   show: boolean;
   onClose: (status?: string) => void;
@@ -21,7 +22,7 @@ const PaystackPaymentDialog: React.FC<PaystackPaymentDialogProps> = ({
   onPaymentError,
   style 
 }) => {
-  // const dispatch = useDispatch(); // ADD THIS LINE
+  //  const dispatch = useDispatch(); // ADD THIS LINE
   if (!show) return null;
 
   return (
@@ -66,11 +67,17 @@ const PaystackPaymentDialog: React.FC<PaystackPaymentDialogProps> = ({
 
                           console.log("Verificationresponse", response);
                           
-                          if (response.success) {
+                          if (response.success && response.data) {
                            // ADD THIS DISPATCH CALL
-                            // dispatch(updatePaymentStatus({ reference,         
+                            // dispatch(updateBoothTransactionStatus({ transactionId: response.data?.transactionId,         
                             //   status: 'paid'
                             // }));
+                           
+                            await BoothController.getInstance().updateBoothTransactionStatus({
+                              transactionId: response.data?.transactionId,  
+                              status: "paid",
+                            });
+                              console.log("Booth transaction status updated successfully");
                             onPaymentSuccess(response.data?.payStackstatus);
 
                             onClose(response.data?.payStackstatus);

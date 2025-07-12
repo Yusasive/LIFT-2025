@@ -35,19 +35,40 @@ export const getLocationType = (locationName: string, booths: any[]): 'indoor' |
   return 'indoor';
 };
 
+
+
 export const calculatePackagePrice = (totalSqm: number, locationType: string, booths?: any[]): number | null => {
-  const actualLocationType = booths ? getLocationType(locationType, booths) : 'indoor';
+ const actualLocationType = booths ? getLocationType(locationType, booths) : 'indoor';
   
   const pricingTable = 
-    actualLocationType === 'indoor' ? INDOOR_PRICING :
-    actualLocationType === 'premium-outdoor' ? PREMIUM_OUTDOOR_PRICING :
+    actualLocationType.trim() === 'indoor' ? INDOOR_PRICING :
+    actualLocationType.trim() === 'premium-outdoor' ? PREMIUM_OUTDOOR_PRICING :
     OUTDOOR_PRICING;
   
-  if (pricingTable[totalSqm]) {
+  if (actualLocationType.trim() === 'indoor') {
+    // Return 0 if no booths
+    if (!booths || booths.length === 0) {
+      return 0;
+    }
+    
+    const sqm = booths[0].sqm;
+    console.log("BOO 2027", JSON.stringify(booths));
+    
+    // Check if pricing exists for this sqm
+    if (!pricingTable[sqm]) {
+      return null; // No pricing found for this sqm
+    }
+    
+    // Since we already checked booths exists, we can use booths.length directly
+    return pricingTable[sqm].price * booths.length;
+  } else {
+    // For outdoor/premium-outdoor, use totalSqm
+    if (!pricingTable[totalSqm]) {
+      return null; // No pricing found for this totalSqm
+    }
+    
     return pricingTable[totalSqm].price;
   }
-  
-  return null;
 };
 
 export const groupBoothsByLocation = (selectedBooths: { [key: string]: any }): { [key: string]: LocationGroup } => {

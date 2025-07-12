@@ -103,6 +103,14 @@ export class Exhibitor extends User {
 
     @Column({ type: "varchar", nullable: true })
     @Expose()
+    booth_preference!: string;
+
+    @Column({ type: "varchar", nullable: true })
+    @Expose()
+    booth_type!: string;
+
+    @Column({ type: "varchar", nullable: true })
+    @Expose()
     rating!: number;
 
     @Column({ type: "varchar", nullable: true })

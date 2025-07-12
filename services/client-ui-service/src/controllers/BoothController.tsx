@@ -364,4 +364,28 @@ export class BoothController {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return Math.max(0, diffDays);
   }
+
+  async getBoothsDatabySectionName(sectionName: string): Promise<BoothItem[]> {
+    const response = await this.repository.getBoothsDatabySectionName(sectionName);
+    
+    // Handle different response structures
+    if (response && typeof response === 'object') {
+      // If response has a data property, extract it
+      if ('data' in response && Array.isArray((response as any).data)) {
+        return (response as any).data;
+      }
+      // If response is already an array, return it
+      if (Array.isArray(response)) {
+        return response;
+      }
+      // If response has success and data properties
+      if ('success' in response && 'data' in response && Array.isArray((response as any).data)) {
+        return (response as any).data;
+      }
+    }
+    
+    // Fallback: return empty array if response structure is unexpected
+    console.warn('Unexpected response structure from getBoothsDatabySectionName:', response);
+    return [];
+  }
 }

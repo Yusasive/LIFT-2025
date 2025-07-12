@@ -33,7 +33,7 @@ export interface ColumnConfig {
 
 export interface PassageConfig {
   passageId: string;
-  type: 'door' | 'corridor' | 'emergency-exit' | 'main-aisle' | 'service-road';
+  type: 'door' | 'corridor' | 'emergency-exit' | 'main-aisle' | 'service-road'| 'thin-aisle';
   separates: string[]; // Which columns/sections this passage separates
   coordinates?: number[][]; // SVG coordinates for visual representation [[x1,y1], [x2,y2]]
   blocksSequential: boolean; // Whether this prevents sequential booking

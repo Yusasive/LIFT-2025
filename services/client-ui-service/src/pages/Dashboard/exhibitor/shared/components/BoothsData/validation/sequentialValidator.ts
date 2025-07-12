@@ -370,25 +370,41 @@ export class SequentialValidator {
   /**
    * Get all valid next booths considering sequential rules
    */
-  getValidNextBoothsBySequence(currentSelections: string[]): string[] {
-    if (currentSelections.length === 0) {
-      return this.layoutConfig.columns.flatMap(col => col.boothRange);
-    }
+ // In sequentialValidator.ts
+// In sequentialValidator.ts, in getValidNextBoothsBySequence method:
 
-    const validBooths = new Set<string>();
-    
-    // Get all booths that are adjacent to any current selection
-    currentSelections.forEach(selectedBooth => {
-      const allowedConnections = this.layoutConfig.sequentialRules.allowedConnections[selectedBooth] || [];
-      allowedConnections.forEach(booth => {
-        if (!currentSelections.includes(booth)) {
-          validBooths.add(booth);
-        }
-      });
-    });
-    
-    return Array.from(validBooths);
+getValidNextBoothsBySequence(currentSelections: string[]): string[] {
+  console.log('\n📋 [SEQUENTIAL VALIDATOR] Getting valid next booths');
+  console.log('Current selections:', currentSelections);
+  
+  if (currentSelections.length === 0) {
+    const allBooths = this.layoutConfig.columns.flatMap(col => col.boothRange);
+    console.log('No selections yet, returning all booths:', allBooths.length);
+    return allBooths;
   }
+
+  const validBooths = new Set<string>();
+  
+  // Get all booths that are adjacent to any current selection
+  currentSelections.forEach(selectedBooth => {
+    const allowedConnections = this.layoutConfig.sequentialRules.allowedConnections[selectedBooth] || [];
+    console.log(`Allowed connections for ${selectedBooth}:`, allowedConnections);
+    
+    allowedConnections.forEach(booth => {
+      // THIS IS THE PROBLEM - it's excluding booths that are in currentSelections
+      if (!currentSelections.includes(booth)) {
+        validBooths.add(booth);
+        console.log(`✅ Adding ${booth} to valid booths`);
+      } else {
+        console.log(`❌ Skipping ${booth} - already in selections`);
+      }
+    });
+  });
+  
+  const result = Array.from(validBooths);
+  console.log('Final valid next booths:', result);
+  return result;
+}
 
   /**
    * Check if a booth is sequentially adjacent to any booth in the selection

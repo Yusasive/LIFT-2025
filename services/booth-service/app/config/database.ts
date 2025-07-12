@@ -3,6 +3,8 @@ import { container } from "tsyringe";
 import * as dotenv from 'dotenv';
 import { BoothItem } from '../models/entity/BoothItem.entity';
 import { BoothTransaction } from '../models/entity/BoothTransaction.entity';
+import { BoothType } from '../models/entity/BoothType.entity';
+import { BoothData } from '../models/entity/BoothData.entity';
 // Load environment variables
 dotenv.config();
 
@@ -16,7 +18,7 @@ const dbConfig: DataSourceOptions = {
     ssl: process.env.NODE_ENV === "prod" || process.env.NODE_ENV === "dev" ? {
         rejectUnauthorized: false
     } : false,
-    entities: [BoothItem, BoothTransaction],
+    entities: [BoothItem, BoothTransaction, BoothType, BoothData],
     synchronize: false,
     logging: process.env.NODE_ENV !== "prod"
 };

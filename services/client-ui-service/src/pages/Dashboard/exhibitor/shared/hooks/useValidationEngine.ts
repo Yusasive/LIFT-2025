@@ -73,16 +73,23 @@ export function useValidationEngine({
   }, [locationName]);
 
   // Get validator instance
-  const validator = useMemo(() => {
-    if (!layoutConfig) return null;
-    
-    try {
-      return ValidatorFactory.getValidator(layoutConfig);
-    } catch (error) {
-      setConfigurationError(`Failed to create validator: ${error}`);
-      return null;
-    }
-  }, [layoutConfig]);
+const validator = useMemo(() => {
+  if (!layoutConfig) {
+    console.log('❌ [VALIDATOR CREATION] No layout config');
+    return null;
+  }
+  
+  try {
+    console.log('✅ [VALIDATOR CREATION] Creating validator for:', layoutConfig.layoutName);
+    const newValidator = ValidatorFactory.getValidator(layoutConfig);
+    console.log('✅ [VALIDATOR CREATION] Validator created successfully');
+    return newValidator;
+  } catch (error) {
+    console.error('❌ [VALIDATOR CREATION] Failed to create validator:', error);
+    setConfigurationError(`Failed to create validator: ${error}`);
+    return null;
+  }
+}, [layoutConfig]);
 
   // Configuration status
   const isConfigured = useMemo(() => {
@@ -176,16 +183,37 @@ export function useValidationEngine({
   }, [validator, layoutConfig, validationMode]);
 
   // Get valid next booths
-  const getValidNextBooths = useCallback((currentSelections: string[]): string[] => {
-    if (!validator) return [];
+// In useValidationEngine.ts, update the getValidNextBooths function:
+
+const getValidNextBooths = useCallback((currentSelections: string[]): string[] => {
+  console.log('\n🔧 [VALIDATION ENGINE] getValidNextBooths called');
+  console.log('Input selections:', currentSelections);
+  console.log('Validator exists?', !!validator);
+  console.log('Is configured?', isConfigured);
+  
+  if (!validator) {
+    console.error('❌ No validator available');
+    return [];
+  }
+  
+  try {
+    const validBooths = validator.getValidNextBooths(currentSelections);
+    console.log('✅ Valid next booths from validator:', validBooths);
+    console.log('✅ Valid booths count:', validBooths.length);
     
-    try {
-      return validator.getValidNextBooths(currentSelections);
-    } catch (error) {
-      console.error('Error getting valid next booths:', error);
-      return [];
+    // Double-check the result
+    if (currentSelections.includes('S029')) {
+      console.log('✅ S029 is selected, checking connections...');
+      const connections = layoutConfig?.sequentialRules?.allowedConnections?.['S029'];
+      console.log('✅ S029 allowed connections from config:', connections);
     }
-  }, [validator]);
+    
+    return validBooths;
+  } catch (error) {
+    console.error('❌ Error getting valid next booths:', error);
+    return [];
+  }
+}, [validator, isConfigured, layoutConfig]);
 
   // Get suggested booths (smart suggestions)
   const getSuggestedBooths = useCallback((currentSelections: string[]): string[] => {
@@ -210,21 +238,49 @@ export function useValidationEngine({
   }, [enableSmartSuggestions, validator]);
 
   // Get blocked booths
-  const getBlockedBooths = useCallback((currentSelections: string[]): string[] => {
-    if (!validator || !layoutConfig) return [];
+// In useValidationEngine.ts, replace the getBlockedBooths function:
+
+// In useValidationEngine.ts, replace the getBlockedBooths function:
+
+const getBlockedBooths = useCallback((currentSelections: string[]): string[] => {
+  console.log('\n🔧 [VALIDATION ENGINE] getBlockedBooths called');
+  console.log('Input selections:', currentSelections);
+  
+  if (!validator || !layoutConfig) {
+    console.error('❌ No validator or layoutConfig available');
+    return [];
+  }
+  
+  try {
+    // Get all booths in the layout
+    const allBooths = layoutConfig.columns.flatMap(col => col.boothRange);
     
-    try {
-      const allBooths = layoutConfig.columns.flatMap(col => col.boothRange);
-      const validBooths = new Set(validator.getValidNextBooths(currentSelections));
-      
-      return allBooths.filter(booth => 
-        !currentSelections.includes(booth) && !validBooths.has(booth)
-      );
-    } catch (error) {
-      console.error('Error getting blocked booths:', error);
-      return [];
-    }
-  }, [validator, layoutConfig]);
+    // Get valid next booths
+    const validNext = validator.getValidNextBooths(currentSelections);
+    const validNextSet = new Set(validNext);
+    
+    console.log('All booths count:', allBooths.length);
+    console.log('Valid next booths:', validNext);
+    
+    // Block ONLY booths that are:
+    // 1. NOT in current selections
+    // 2. NOT in valid next booths
+    const blocked = allBooths.filter(booth => 
+      !currentSelections.includes(booth) && !validNextSet.has(booth)
+    );
+    
+    console.log('Blocked booths count:', blocked.length);
+    console.log('Is S028 in validNext?', validNextSet.has('S028'));
+    console.log('Is S042 in validNext?', validNextSet.has('S042'));
+    console.log('Is S028 blocked?', blocked.includes('S028'));
+    console.log('Is S042 blocked?', blocked.includes('S042'));
+    
+    return blocked;
+  } catch (error) {
+    console.error('❌ Error getting blocked booths:', error);
+    return [];
+  }
+}, [validator, layoutConfig]);
 
   // Get selection analysis
   const getSelectionAnalysis = useCallback(() => {

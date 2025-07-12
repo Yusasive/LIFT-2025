@@ -27,7 +27,7 @@ const EventSection: React.FC = () => {
             {[1, 2, 3].map((_, index) => (
               <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row">
                 <img
-                  src={`/images/background${(index % 3) + 1}.png`}
+                  src={`/images/background${(index % 3) + 5}.jpg`}
                   alt="event"
                   className="w-80 h-56 object-cover"
                 />

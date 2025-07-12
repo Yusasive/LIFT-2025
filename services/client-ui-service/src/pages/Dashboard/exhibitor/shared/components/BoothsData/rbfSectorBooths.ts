@@ -1,628 +1,230 @@
-import { BoothData } from '../../types/booth.types';
+// components/BoothsData/rbfSectorBooths.ts
 
+import { BoothData } from '../../types/booth.types';
 export const rbfSectorBooths: { [key: string]: BoothData } = {
+  // FIRST GROUP (RBF101-112) - Columns 1-2
+  // Upper section - 2 booths per column
   "RBF101": {
-    "coords": [
-      [
-        1196,
-        2441
-      ],
-      [
-        1297,
-        2251
-      ],
-      [
-        1392,
-        2441
-      ],
-      [
-        1291,
-        2630
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF101"
+    coords: [[100, 100], [200, 100], [200, 200], [100, 200]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF101"
   },
   "RBF102": {
-    "coords": [
-      [
-        1297,
-        2251
-      ],
-      [
-        1398,
-        2061
-      ],
-      [
-        1493,
-        2251
-      ],
-      [
-        1392,
-        2435
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF102"
+    coords: [[200, 100], [300, 100], [300, 200], [200, 200]],
+    status: "available",
+    size: "3m x 3m",
+     category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF102"
   },
   "RBF103": {
-    "coords": [
-      [
-        1291,
-        2630
-      ],
-      [
-        1398,
-        2452
-      ],
-      [
-        1487,
-        2630
-      ],
-      [
-        1392,
-        2832
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF103"
+    coords: [[100, 200], [200, 200], [200, 300], [100, 300]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF103"
   },
   "RBF104": {
-    "coords": [
-      [
-        1392,
-        2452
-      ],
-      [
-        1493,
-        2251
-      ],
-      [
-        1589,
-        2441
-      ],
-      [
-        1493,
-        2642
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF104"
+    coords: [[200, 200], [300, 200], [300, 300], [200, 300]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF104"
   },
+  
+  // Lower section - 4 booths per column
   "RBF105": {
-    "coords": [
-      [
-        1594,
-        3230
-      ],
-      [
-        1690,
-        3040
-      ],
-      [
-        1791,
-        3242
-      ],
-      [
-        1690,
-        3420
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF105"
+    coords: [[100, 600], [200, 600], [200, 700], [100, 700]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Standard",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF105"
   },
   "RBF106": {
-    "coords": [
-      [
-        1696,
-        3028
-      ],
-      [
-        1791,
-        2850
-      ],
-      [
-        1892,
-        3040
-      ],
-      [
-        1791,
-        3230
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF106"
+    coords: [[200, 600], [300, 600], [300, 700], [200, 700]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Standard",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF106"
   },
   "RBF107": {
-    "coords": [
-      [
-        1696,
-        3425
-      ],
-      [
-        1791,
-        3247
-      ],
-      [
-        1892,
-        3437
-      ],
-      [
-        1791,
-        3627
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF107"
+    coords: [[100, 700], [200, 700], [200, 800], [100, 800]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Standard",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF107"
   },
   "RBF108": {
-    "coords": [
-      [
-        1791,
-        3242
-      ],
-      [
-        1892,
-        3040
-      ],
-      [
-        1993,
-        3242
-      ],
-      [
-        1892,
-        3431
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF108"
+    coords: [[200, 700], [300, 700], [300, 800], [200, 800]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Standard",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF108"
   },
   "RBF109": {
-    "coords": [
-      [
-        1797,
-        3627
-      ],
-      [
-        1892,
-        3437
-      ],
-      [
-        1993,
-        3627
-      ],
-      [
-        1892,
-        3817
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF109"
+    coords: [[100, 800], [200, 800], [200, 900], [100, 900]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Standard",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF109"
   },
   "RBF110": {
-    "coords": [
-      [
-        1892,
-        3431
-      ],
-      [
-        1993,
-        3242
-      ],
-      [
-        2089,
-        3431
-      ],
-      [
-        1993,
-        3621
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF110"
+    coords: [[200, 800], [300, 800], [300, 900], [200, 900]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Standard",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF110"
   },
   "RBF111": {
-    "coords": [
-      [
-        1892,
-        3817
-      ],
-      [
-        1993,
-        3639
-      ],
-      [
-        2083,
-        3829
-      ],
-      [
-        1987,
-        4007
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF111"
+    coords: [[100, 900], [200, 900], [200, 1000], [100, 1000]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Standard",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF111"
   },
   "RBF112": {
-    "coords": [
-      [
-        1993,
-        3639
-      ],
-      [
-        2089,
-        3437
-      ],
-      [
-        2184,
-        3639
-      ],
-      [
-        2089,
-        3829
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF112"
+    coords: [[200, 900], [300, 900], [300, 1000], [200, 1000]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Standard",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF112"
   },
+  
+  // SECOND GROUP (RBF201-212) - Columns 4-5
+  // Upper section
   "RBF201": {
-    "coords": [
-      [
-        1499,
-        1853
-      ],
-      [
-        1594,
-        1663
-      ],
-      [
-        1696,
-        1865
-      ],
-      [
-        1594,
-        2043
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF201"
+    coords: [[400, 100], [500, 100], [500, 200], [400, 200]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF201"
   },
   "RBF202": {
-    "coords": [
-      [
-        1600,
-        1651
-      ],
-      [
-        1696,
-        1473
-      ],
-      [
-        1791,
-        1663
-      ],
-      [
-        1702,
-        1865
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF202"
+    coords: [[500, 100], [600, 100], [600, 200], [500, 200]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF202"
   },
   "RBF203": {
-    "coords": [
-      [
-        1600,
-        2061
-      ],
-      [
-        1696,
-        1871
-      ],
-      [
-        1791,
-        2049
-      ],
-      [
-        1696,
-        2251
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF203"
+    coords: [[400, 200], [500, 200], [500, 300], [400, 300]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF203"
   },
   "RBF204": {
-    "coords": [
-      [
-        1702,
-        1871
-      ],
-      [
-        1797,
-        1669
-      ],
-      [
-        1898,
-        1871
-      ],
-      [
-        1797,
-        2061
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF204"
+    coords: [[500, 200], [600, 200], [600, 300], [500, 300]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF204"
   },
+  
+  // Lower section
   "RBF205": {
-    "coords": [
-      [
-        1892,
-        2654
-      ],
-      [
-        1993,
-        2464
-      ],
-      [
-        2095,
-        2654
-      ],
-      [
-        1993,
-        2832
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF205"
+    coords: [[400, 600], [500, 600], [500, 700], [400, 700]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF205"
   },
   "RBF206": {
-    "coords": [
-      [
-        1999,
-        2452
-      ],
-      [
-        2101,
-        2274
-      ],
-      [
-        2190,
-        2464
-      ],
-      [
-        2095,
-        2642
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF206"
+    coords: [[500, 600], [600, 600], [600, 700], [500, 700]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF206"
   },
   "RBF207": {
-    "coords": [
-      [
-        1993,
-        2844
-      ],
-      [
-        2095,
-        2654
-      ],
-      [
-        2190,
-        2844
-      ],
-      [
-        2095,
-        3034
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF207"
+    coords: [[400, 700], [500, 700], [500, 800], [400, 800]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF207"
   },
   "RBF208": {
-    "coords": [
-      [
-        2095,
-        2642
-      ],
-      [
-        2196,
-        2452
-      ],
-      [
-        2291,
-        2666
-      ],
-      [
-        2190,
-        2856
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF208"
+    coords: [[500, 700], [600, 700], [600, 800], [500, 800]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF208"
   },
   "RBF209": {
-    "coords": [
-      [
-        2101,
-        3040
-      ],
-      [
-        2190,
-        2850
-      ],
-      [
-        2291,
-        3040
-      ],
-      [
-        2196,
-        3230
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF209"
+    coords: [[400, 800], [500, 800], [500, 900], [400, 900]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF209"
   },
   "RBF210": {
-    "coords": [
-      [
-        2196,
-        2856
-      ],
-      [
-        2297,
-        2666
-      ],
-      [
-        2392,
-        2856
-      ],
-      [
-        2291,
-        3046
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF210"
+    coords: [[500, 800], [600, 800], [600, 900], [500, 900]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF210"
   },
   "RBF211": {
-    "coords": [
-      [
-        2196,
-        3242
-      ],
-      [
-        2291,
-        3052
-      ],
-      [
-        2386,
-        3242
-      ],
-      [
-        2297,
-        3431
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF211"
+    coords: [[400, 900], [500, 900], [500, 1000], [400, 1000]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF211"
   },
   "RBF212": {
-    "coords": [
-      [
-        2291,
-        3058
-      ],
-      [
-        2398,
-        2856
-      ],
-      [
-        2494,
-        3046
-      ],
-      [
-        2392,
-        3236
-      ]
-    ],
-    "status": "available",
-    "size": "3m x 3m",
-    "category": "Standard",
-    "price": 331980,
-    "sqm": 9,
-    "boothId": "RBF212"
+    coords: [[500, 900], [600, 900], [600, 1000], [500, 1000]],
+    status: "available",
+    size: "3m x 3m",
+    category: "Premium",
+    price: 36680,
+    sqm: 9,
+    boothId: "RBF212"
   }
 };
